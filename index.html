@@ -1,0 +1,96 @@
+<!--Text Adventure : Search for the lost cellphone -->
+<!--*****************************************
+    A twist on this:
+    http://domscode.com/2013/05/07/1160/
+    but tailored towards Beas lost cellphone adventures in Toronto
+
+    Author: Alexander Figueroa
+    ***************************************** -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>The Lost Nexus</title>
+        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" type="text/css" href="styles/main.css">
+        <!-- include the core styles -->
+        <link rel="stylesheet" href="styles/alertify.core.css" />
+        <link rel="stylesheet" href="styles/alertify.bootstrap.css" />
+    </head>
+    <body>
+        <div class="content">
+            <style></style>
+            <div id="screenContainer">
+                <div id="display">
+                    <div id="input">
+                        <form>
+                            <!--Screen Title-->
+                            <h1>The Lost Nexus</h1>
+                            <!--Screen Sub-Title-->
+                            <h3>
+                                Find Beas cell phone in the crazy city of Toronto
+                            </h3>
+                            <div id="GameOverDiv">
+                            </div>
+                            <div id="GameDiv">
+                                <!--The following div is hidden or shown depending on if its a non-mobile browser-->
+                                <div id="keyboard">
+                                    <label>Command:</label>
+                                    <input type="text" name="userInput" class="buttonMod" id="userInput" /> 
+                                </div>
+                                <br/>
+                                <!--The following div is hidden or shown depending on if its a mobile browser-->
+                                <div id="controllers">
+                                    <!--We use a table for the simple alignment of the buttons-->
+                                    <table>
+                                        <tr>
+                                            <td></td>
+                                            <td>
+                                                <input type='button' class='button' value='N' title="North" style="left: 200px" />
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input type='button' class='button' value='W' title="West" /></td>
+                                            <td></td>
+                                            <td>
+                                                <input type='button' class='button' value='E' title="East" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>
+                                                <input type='button' class='button' value='S' title="South" /></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input type='button' class='button' value='P' title="Pickup" /></td>
+                                            <td>
+                                                <input type='button' class='button' value='A' title="About" /></td>
+                                            <td>
+                                                <input type='button' class='button' value='?' title="Help" /></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div id="output"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Bootstrap core JavaScript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <!-- Thank you based alertify: http://fabien-d.github.io/alertify.js/ -->
+        <script src="scripts/alertify.min.js"></script>
+        <script src="scripts/adventurelogic.js"></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+    </body>
+</html>
