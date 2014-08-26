@@ -6,7 +6,7 @@ $(document).ready(function () {
         ok: "Ok, I got it."
     } });
     // button labels will be "Accept" and "Deny"
-    alertify.alert("<div class='alertnotification'>Welcome!<br/>The following commands are valid:<br/><ul><li>N (North)</li><li>S (South)</li><li>E (East)</li><li>W (West)</li><li>P (Pick up)</li><li>A (About)</li></ul></div>");
+    alertify.alert("<div class='alertnotification'>In a land far, far away also known as Toronto, ON...<br/><br/>Search through each of the rooms for valuable items needed to destroy and retrieve Bea's cellphone from the one known as the Shipper.<br/><br/>The following commands are valid:<br/><ul><li>N (North)</li><li>S (South)</li><li>E (East)</li><li>W (West)</li><li>P (Pick up)</li><li>A (About)</li></ul></div>");
 
     //game variables    
     var message,                // screen message to display
@@ -15,33 +15,61 @@ $(document).ready(function () {
     currentRoom = 0,            // initial room  
     exitRoom = 31,              // final room of the dungeon
     isGameOver = false;         // Maintain the state of the game
-    isOgreAlive = true,         // Stores the state of the Ogre - Alive/Dead
-    isDragonAlive = true,       // this is the gameover state
+    isNegaBeaAlive = true,         // Stores the state of the Ogre - Alive/Dead
+    isShipperAlive = true,       // this is the gameover state
     lastDirection = "";         // Last direction taken.
 
     //All the rooms in the game
-    var rooms = new Array("Dungeon Entrance", "Corridor of uncertainty", 'Ancient old cavern', "Great Cavern", "Underground River", "Stream", 'Dungeon Stream', "Dungeon Pool",
-                          "Large Cavern", "Rough Tunnel", "Long Tunnel", "Dark Room", "Dark Room", "Cold Room", "Old Tunnel", "Cold Room",
-                          "Old Cavern", "Short Corridor", "Short Corridor", "Grey Room", "Green Room", "Old Prison Cell", "Underground River",
-                          "Large Cavern", "Rough Tunnel", "Long Tunnel", "Dark Room", "Dark Room", "Cold Room", "Old Tunnel", "Dragons Room");
+    var rooms = new Array("Union Station", "Honest Eds", 'Rogers Center', "CN Tower", "Air Canada Center", "The Distillery District", 
+                          'Snakes and Lattes', "Alexs House (Don't ask)", "Dance Cave", "Sewers", "Hammark", "Zanzibar VIP Room", 
+                          "Zanzibar VIP Room", "Curling Rink", "Taxi", "Curling Rink", "Markham", "Construction Zone", "Construction Zone", 
+                          "Concrete Jungle", "Greenhouse", "The Annex", "Cat Cafe", "Dance Cave", "Sewers", "Area with good Wind reception (Rare)", 
+                          "Zanzibar VIP Room", "Sneaky Dees", "Curling Rink", "Taxi", "Shippers Lair");
 
-    //Each exit relates to the index ie. Exits[0] SE which means rooms[0] the long path has two exits on the  South and East. If we look
-    //down to the //Movement Code section you can see how we work out which rooms are connected to which
+    // 4 rooms are not as they are special zones.
+    var offLimitRooms = [0, 10, 25, 30];
+
+    // 27 rooms are allowed to have items
+    var roomsAllowedToHaveItems = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28, 29];
+
+    // Kind of useless but this isn't all my code so HEY.
     var exits = new Array("E", "SWE", "WE", "SWE", "WE", "WE", "SWE", "WS",
                           "NSE", "SE", "WE", "NW", "SE", "W", "SNE", "NSW",
                           "NS", "NS", "SE", "WE", "NWE", "SWE", "WS", "N",
                           "N", "NWE", "NWE", "WE", "WE", "NW", "NE", "W");
 
-    //All out game objects
-    var gameObjects = new Array('', "Painting", "Knife", "Wand of Firebolts", "Goblet", "Wand of Wind", "Coins", "Helmet", "Candle", "Torch", "Iron Shield", "Armour", "Oil", "Axe", "Rope", "Boat", "Aerosol", "Candle", "Key");
+    // We therefore need 27 objects where some can repeat.
+    // However, we're only going to allow 20 rooms to have items at a given time so only 20 are needed.
+    var gameObjects = new Array("Metro Pass",
+                                "Map of Toronto", 
+                                "Swiss Army Knife", 
+                                "Mint Bag", 
+                                "Goblet of Fire (The Book)", 
+                                "Exodia Deck", 
+                                "Coins for TTC", 
+                                "Helmet for Walking", 
+                                "Candle Wax", 
+                                "Plastic Cell Phone", 
+                                "Poutine from PoutineVille", 
+                                "Reality Cheque", 
+                                "Avenue-Q on Blu-Ray", 
+                                "Markham Street Cred", 
+                                "The missing T in Torono", 
+                                "Tearbending ability", 
+                                "Pestro Card", 
+                                "Guardian Angel", 
+                                "The Power of Love", 
+                                "Old embrassing home video");
 
     //Inventory array Contains all the things you can carry
     var inventory = new Array();
-    inventory[0] = 2; //lets start our player off with a knife
+    inventory[0] = "Metro Pass"; //lets start our player off with a metro pass so they can safely venture Toronto
 
-    //location of game objects - these objects relate to a array index - so Object[1] the Painting is located
-    //in rooms[2] the small garden - 999 indicates out of play 
-    var objectLocations = [999, 1, 3, 4, 5, 6, 7, 8, 10, 11, 15, 14, 12, 18, 19, 16, 17, 9];
+    // These represent room numbers where items can be found
+    // Shuffle found on: http://css-tricks.com/snippets/javascript/shuffle-array/
+    // We'll slice the array to 14 of these rooms only so that not every room has an item
+    var shuffledRooms = roomsAllowedToHaveItems.sort(function() { return 0.5 - Math.random() });
+    var itemLocationRoomNumbers = shuffledRooms.slice(0, 15); // Grab first 14 only
 
     //This function detects if the browser if a mobile - you'll see when we call this we apply the 
     function isMobile() {
@@ -61,15 +89,26 @@ $(document).ready(function () {
         $("#userInput").focus();
     }
 
-    //javascript function to pickup the object in this room
-    var pickup = function (roomIndex) {
-        var itemIndex;
-        if (objectLocations[roomIndex] > 0 && objectLocations[roomIndex] < 100) {
+    // Check if item in a room number is valid
+    function objectExistsInRoomNumber(roomIndex) {
+        // First thing first, check if this room even has an item
+        var objectInRoomIndex = getObjectForRoom(roomIndex);
+        if (objectInRoomIndex == -1) {
+            return false;
+        }
+
+        // Now, check in the item list that this number is not 999 (OUR EDGE case for items out of play).
+        return itemLocationRoomNumbers[objectInRoomIndex] != 999;
+    }
+
+    // Pickup the object in this room
+    var pickup = function(roomIndex) {
+        if (objectExistsInRoomNumber(roomIndex)) {
             // If there is an object here...
-            itemIndex = getObjectForRoom(roomIndex);
-            inventory[inventory.length] = itemIndex;
-            objectLocations[roomIndex] = 999;
-            alertify.success("You successfully picked up " + gameObjects[itemIndex]);
+            var itemIndex = getObjectForRoom(roomIndex);
+            inventory[inventory.length] = gameObjects[itemIndex % gameObjects.length]
+            itemLocationRoomNumbers[itemIndex] = 999;
+            alertify.success("You successfully picked up " + gameObjects[itemIndex % gameObjects.length]);
         } else {
             alertify.error("There are no items to pick up here");
         }
@@ -77,12 +116,18 @@ $(document).ready(function () {
 
     //This function  loops through the object location array and returns
     function getObjectForRoom(currentRoom) {
-        var roomIndex = -1;
-        for (var i = 0; i < objectLocations.length ; i++) {
-            if (objectLocations[i] == currentRoom)
-                roomIndex = i;
+        var objectInRoomIndex = -1;
+        if (currentRoom == 0) {
+            return objectInRoomIndex;
         }
-        return roomIndex
+
+        for (var i = 0; i < itemLocationRoomNumbers.length ; i++) {
+            if (itemLocationRoomNumbers[i] == currentRoom) {
+                objectInRoomIndex = i;
+                break;
+            }
+        }
+        return objectInRoomIndex
     }
 
     // Returns the last direction if applicable
@@ -111,17 +156,19 @@ $(document).ready(function () {
         displayText('Light Level: ' + lightLevel);
         displayText("HP: " + hits);
 
-        if (getObjectForRoom(currentRoom) != -1) {
-            var index = getObjectForRoom(currentRoom);
-            displayText("You can see " + gameObjects[index]);
+        var objectIndex = getObjectForRoom(currentRoom);
+        if (objectIndex != -1) {
+            displayText("You can see " + gameObjects[objectIndex % gameObjects.length] + ". Enter 'P' to pick it up!");
         }
 
         //If there is something in our inventory then display it
         if (inventory.length > 0) {
-            displayText("You are carrying: ");
+            var inventoryList = "";
             for (var i = 0; i < inventory.length ; i++) {
-                displayText("-" + gameObjects[inventory[i]]);
+                inventoryList += "<li>" + inventory[i] + "</li>"; // I know it's inefficient, I'm doing it anyways
             }
+            
+            displayText("Current Inventory: <ul>" + inventoryList + "</ul>");
         }
 
         if (message != null) {
@@ -129,13 +176,16 @@ $(document).ready(function () {
         }
 
         //Game over code
-        if (isDragonAlive) {
-            $('#GameOverDiv').hide();
-            $('#GameDiv').show();
-        }
-        else {
-            $('#GameOverDiv').show();
-            $('#GameDiv').hide();
+        if (isGameOver) {
+            alertify.set({ labels: {
+                ok: "Fine."
+            } });
+            alertify.alert("<div class='alertnotification'>Game Over</div>", function(e) {
+                if (e) {
+                    // Reload the page
+                    location.reload();
+                }
+            });
         }
         message = "What?";
     }
@@ -148,6 +198,22 @@ $(document).ready(function () {
             }
         }
         return false;
+    }
+
+    // Check if inventory contains item
+    function inventoryContainsItem(itemIndex) {
+        for (var key in inventory) {
+            if (inventory[key] == gameObjects[itemIndex % gameObjects.length]) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Random item getter
+    function randomItemIndexFromGameObjects() {
+        return Math.floor(Math.random() * 101) % gameObjects.length;
     }
 
     //Uses the text for a room to build a string that shows which rooms are next to the current room
@@ -172,6 +238,22 @@ $(document).ready(function () {
         $display.html($display.html().toString() + text + "<br>");
     }
 
+    // Simple alertify
+    function simple_alertify(text, okButtonTitle) {
+        alertify.set({ labels: {
+            ok: okButtonTitle
+        } });
+        alertify.alert('<div class="alertnotification">' + text + "</div>");
+    }
+
+    function currentRoomName(currentRoomIndex) {
+        if (currentRoomIndex > rooms.length) {
+            return "Nowhere"
+        } else {
+            return rooms[currentRoomIndex];
+        }
+    }
+
     //Each round we call this function to do all the main game processing 
     function processGameRound(command) {
 
@@ -182,41 +264,57 @@ $(document).ready(function () {
         processCommand(command);
 
         //NOw that we have taken the players logic we need to activate the main game room logic
-        if (currentRoom == 10 && isOgreAlive) {
-            //if you are fighting the ogre and you have the spells
-            if (checkIndex(inventory, 3)) {
-                message += "\<br\>YOU attack the ogre with magic spells and kill him!";
-                isOgreAlive = false;
+        if (currentRoomName(currentRoom) == "Hammark" && isNegaBeaAlive) {
+            //if you are fighting the NegaBea
+            var randomIndex = randomItemIndexFromGameObjects();
+
+            if (inventoryContainsItem(randomIndex)) {
+                simple_alertify("Nega-Bea appeared and attacked but YOU had the " + gameObjects[randomIndex] + " so it's dead (Think Warm Bodies).", "Yay now dismiss.");
+                isNegaBeaAlive = false;
             }
             else {
-                message += "\<br\>Ogre attacks you!";
+                // message += "\<br\>Ogre attacks you!";
+                simple_alertify("Nega-Bea appeared and attacked you and it got away with it cause there was no meddling kids and some dog.", "Shoot, dismiss");
                 hits--;
+
+                if (hits == 0) {
+                    isGameOver = true;
+                }
             }
         }
 
-        //If you are in the final room and the dragon is still alive
-        if (currentRoom == 31 && isDragonAlive) {
-            //if you are fighting the dragon and you have the oil, burning torch
-            if (checkIndex(inventory, 5) && checkIndex(inventory, 9) && checkIndex(inventory, 12)) {
-                message += "\<br\>You attack the dragon with oil, burning torch and the wand of Wind - It creates and kill him!";
-                isDragonAlive = false; //End Game
-                gameover = true;           
+        //If you are in the final room and the shipper is still alive
+        if (currentRoomName(currentRoom) == "Shippers Lair" && isShipperAlive) {
+            //if you are fighting the shipper and you have the deadly combo needed.
+            var randomIndex1 = randomItemIndexFromGameObjects();
+            var randomIndex2 = randomItemIndexFromGameObjects();
+
+            if (inventoryContainsItem(randomIndex1) && inventoryContainsItem(randomIndex2)) {
+                simple_alertify("The Shipper appeared but you attacked it by combining " + gameObjects[randomIndex1] + " and " + gameObjects[randomIndex2] + "!. He will no longer make weird ships and you got your cellphone back!", "Farewell");
+                isShipperAlive = false; //End Game
+                isGameOver = true;           
             }
             else {
-                message += "\<br\>The dragon attacks you with firebreath and kills you!";
+                // message += "\<br\>The dragon attacks you with firebreath and kills you!";
+                simple_alertify("The Shipper appeared and attacked you with its uncomfortable shipping combinations sent from your phone. Tough luck kid.", "Ciao");
                 hits = 0;
-                gameover = true;
+                isGameOver = true;
             }
         }
 
-        if (currentRoom == 25) {
+        if (currentRoomName(currentRoom) == "Area with good Wind reception (Rare)") {
             //if you are fighting the gas room burning torch
-            if (checkIndex(inventory, 10)) {
-                message += "\<br\>The gas in the room is ignited by the torch - You become a human BBQ and die!";
+            var randomIndex = randomItemIndexFromGameObjects();
+            if (inventoryContainsItem(randomIndex)) {
+                simple_alertify("Someone called you but because you had " + gameObjects[randomIndex] + ". You were safe", "Let me continue");
+            } 
+            else {
+                simple_alertify("Someone important was calling you but you can't pick up because you have no phone so paradox ensued. Sorry!", "Bye");
                 hits = 0;
-                gameover = true;
+                isGameOver = true;
             }
         }
+
         displayGameScreen();
     }
 
