@@ -68,16 +68,17 @@ header h1 {
   padding-left: 10px;
 }
 
-#userInfoHeader {
-  text-decoration: underline;
-}
-
 #userInfo div ul {
   list-style: none;
   padding-left: 0;
 }
 
-.content {
-  padding-bottom: 10px;
+.text {
+  text-align: center;
 }
 
+/* Create colored cards for the user information */
+#userInfoHeader {
+  background-color: #1abc9c;
+  color: #34495e;
+}
