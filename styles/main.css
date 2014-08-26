@@ -11,3 +11,35 @@
 .gameform {
   text-align: center;
 }
+
+#output ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+header {
+  background: #1abc9c;
+}
+
+header h1 {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top: 18px;
+  padding-bottom: 18px;
+  color: #34495e;
+}
+
+#GameDiv, #output {
+  background: #34495e;
+  color: #ffffff;
+}
+
+#keyboard {
+  padding-top: 50px;
+  padding-bottom: 20px;
+}
+
+#userInput {
+  width: 800px;
+  color: #34495e;
+}

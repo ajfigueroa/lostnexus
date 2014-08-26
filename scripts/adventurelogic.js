@@ -384,7 +384,45 @@ $(document).ready(function () {
         displayGameScreen();
     }
 
+    function parseCommand(command) {
+        // If the command is the full word, let's use it anyways.
+        // There is probably a better way to do this BUT THIS IS ALL HACKY.
+        var alternateCommand = command;
+
+        switch (command) {
+            // Least common cases
+            case "NORTH":
+                alternateCommand = 'N';
+                break;
+            case "SOUTH":
+                alternateCommand = 'S';
+                break;
+            case "WEST":
+                alternateCommand = 'W';
+                break;
+            case "EAST":
+                alternateCommand = 'E';
+                break;
+            case "PICK UP":
+                alternateCommand = 'P';
+                break;
+            case "PICK-UP":
+                alternateCommand = 'P';
+                break;
+            case "ABOUT":
+                alternateCommand = 'A';
+                break;
+            default:
+                // Do nothing because the command fits none of these cases.
+                break;
+        }
+
+        return alternateCommand;
+    }
+
     function processCommand(command) {
+        // Parse the command quick to make sure it's valid.
+        command = parseCommand(command.toUpperCase());
         var direction = command;
         message = "OK";
         switch (command) {

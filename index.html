@@ -24,62 +24,28 @@
                 <div id="display">
                     <div id="input">
                         <form class="gameform">
-                            <!--Screen Title-->
-                            <h1>The Lost Nexus</h1>
+                            <header>
+                              <h1>The Lost Nexus</h1>
+                            </header>
                             <!--Screen Sub-Title-->
                             <div id="GameDiv">
                                 <!--The following div is hidden or shown depending on if its a non-mobile browser-->
                                 <div id="keyboard">
-                                    <label>Command:</label>
-                                    <input type="text" name="userInput" class="buttonMod" id="userInput" /> 
+                                    <!-- <label>Command:</label> -->
+                                    <span class="fui-arrow-right"></span>
+                                    <input type="text" name="userInput" class="buttonMod" id="userInput" placeholder="Enter your command here."/> 
                                 </div>
                                 <br/>
-                                <!--The following div is hidden or shown depending on if its a mobile browser-->
-                                <div id="controllers">
-                                    <!--We use a table for the simple alignment of the buttons-->
-                                    <table>
-                                        <tr>
-                                            <td></td>
-                                            <td>
-                                                <input type='button' class='button' value='N' title="North" style="left: 200px" />
-                                            </td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <input type='button' class='button' value='W' title="West" /></td>
-                                            <td></td>
-                                            <td>
-                                                <input type='button' class='button' value='E' title="East" /></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td>
-                                                <input type='button' class='button' value='S' title="South" /></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <input type='button' class='button' value='P' title="Pickup" /></td>
-                                            <td>
-                                                <input type='button' class='button' value='A' title="About" /></td>
-                                            <td>
-                                                <input type='button' class='button' value='?' title="Help" /></td>
-                                        </tr>
-                                    </table>
-                                </div>
                             </div>
-                            <div id="output"></div>
                         </form>
                     </div>
+                    <div id="output"></div>
                 </div>
             </div>
         </div>
+        <footer>
+          Footer here.
+        </footer>
         <!-- Bootstrap core JavaScript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->

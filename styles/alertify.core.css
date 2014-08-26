@@ -58,6 +58,8 @@
 	bottom: 10px;
 	right: 10px;
 	width: 300px;
+  /* This changes height of success/error blocks */
+  /*top: 100px;*/
 }
 .alertify-logs-hidden {
 	display: none;
