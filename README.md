@@ -11,6 +11,8 @@ I promised myself I would not spend more than a day on this so hence why.
 If it were up to me, I would refactor a lot and start off with a more concrete approach to this but this was simply done for someone to hopefully cheer them up so pardon
 the incredible amount of inside jokes and references.
 
+Disclaimer 2: I do not guarantee it'll look good on all resolutions as it was only tested on Chrome and on my computer.
+
 Attributions
 ------------
 - [Tutorial from Domscode created by dommillar](http://domscode.com/2013/05/07/1160/) which was the basis of this quick project.
