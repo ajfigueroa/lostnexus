@@ -6,7 +6,7 @@ $(document).ready(function () {
         ok: "Ok, I got it."
     } });
     // button labels will be "Accept" and "Deny"
-    alertify.alert("<div class='alertnotification'>In a land far, far away also known as Toronto, ON<br/>A cellphone was lost...</br><br/>Search through each of the rooms for valuable items needed to destroy and retrieve the lost nexus from the one known as the Shipper.<br/>It is rumoured that his weakness is an Exodia Deck and a Reality Cheque<br/><br/>The following commands are valid:<br/><ul><li>N (North)</li><li>S (South)</li><li>E (East)</li><li>W (West)</li><li>P (Pick up)</li><li>A (About)</li></ul></div>");
+    alertify.alert("<div class='alertnotification'>Not so long ago in the mysterious land of Toronto, Canada...<br/>A cellphone was lost...</br><br/>Search through each of the rooms for valuable items needed to destroy and retrieve the lost nexus from the one known as the Shipper.<br/>It is rumoured that his weakness is an Exodia Deck and a Reality Cheque<br/><br/>The following commands are valid:<br/><ul><li>N (North)</li><li>S (South)</li><li>E (East)</li><li>W (West)</li><li>P (Pick up)</li><li>A (About)</li></ul></div>");
 
     //game variables    
     var message,                // screen message to display
