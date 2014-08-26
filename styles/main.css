@@ -30,9 +30,20 @@ header h1 {
   text-align: center;
 }
 
-#GameDiv, #output, html {
+#GameDiv, #output, html, #progressOutput {
   background: #34495e;
   color: #ffffff;
+}
+
+#progressOutput {
+  text-align: center;
+  width: 650px;
+  margin-left: auto;
+  margin-right: auto;
+  border: 3px solid #bdc3c7;
+  border-radius: 6px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 #keyboard {

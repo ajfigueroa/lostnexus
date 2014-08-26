@@ -72,23 +72,8 @@ $(document).ready(function () {
     var shuffledRooms = roomsAllowedToHaveItems.sort(function() { return 0.5 - Math.random() });
     var itemLocationRoomNumbers = shuffledRooms.slice(0, 15); // Grab first 14 only
 
-    //This function detects if the browser if a mobile - you'll see when we call this we apply the 
-    function isMobile() {
-        return navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/iPhone|iPad|iPod/i)
-                || navigator.userAgent.match(/Opera Mini/i) || navigator.userAgent.match(/IEMobile/i);
-    }
-
-    //The next line checks for a mobile browser and if it find st it will hide the buttons or hide the text box
-    if (isMobile()) {
-        //hide the text box - we dont need that for a mobile browser as its hard to use mobile keyboard for lots of commands
-        $("#keyboard").hide();
-    } else {
-        //hide the buttons as we don't want that for the normal web experience
-        $('#controllers').hide();
-
-        //jquery command to force the textbox to take focus  
-        $("#userInput").focus();
-    }
+    //jquery command to force the textbox to take focus  
+    $("#userInput").focus();
 
     // Check if item in a room number is valid
     function objectExistsInRoomNumber(roomIndex) {
@@ -147,19 +132,21 @@ $(document).ready(function () {
 
         //clear the output div
         $display.empty();
+        $('#progressOutput').empty();
 
         //Display the screen output text - note this does not include the buttons
         if (firstTime) {
-            displayText("You start off at: " + rooms[currentRoom]);
+            displayProgress("You start your journey off at " + rooms[currentRoom]);
             firstTime = false;
         } else {
-            displayText("You have walked into: " + rooms[currentRoom]);
+            displayProgress("You have ventured into " + rooms[currentRoom]);
         }
 
         // Display whats in the room
         var objectIndex = getObjectForRoom(currentRoom);
+
         if (objectIndex != -1) {
-            displayText("You can see " + gameObjects[objectIndex % gameObjects.length] + ". Enter 'P' to pick it up!");
+            displayProgress("You can see " + gameObjects[objectIndex % gameObjects.length] + ". Enter 'P' to pick it up!");
         } else {
             var additionalMessage;
             var baseMessage = "There is nothing of interest here";
@@ -206,11 +193,11 @@ $(document).ready(function () {
                     break;
             }
 
-            displayText(baseMessage + additionalMessage);
+            displayProgress(baseMessage + additionalMessage);
         }
 
 
-        displayText("You can move in any of the following directions: " + showAdjacentRooms(exits[currentRoom]));
+        displayProgress("<br/>You can move in any of the following directions: " + showAdjacentRooms(exits[currentRoom]));
         displayText("Your last direction was: " + getLastDirection());
         displayText("");
         displayText('Current Area #: ' + currentRoom);
@@ -247,14 +234,13 @@ $(document).ready(function () {
         message = "What?";
     }
 
-    //Replaces the indexOf js function as i have found it doesn't always work for me!!!!!!!!
-    function checkIndex(issFullArray, issToCheck) {
-        for (i = 0; i < issFullArray.length; i++) {
-            if (issFullArray[i] == issToCheck) {
-                return true;
-            }
+    // Returns human readable name for the current room index
+    function currentRoomName(currentRoomIndex) {
+        if (currentRoomIndex > rooms.length) {
+            return "Nowhere"
+        } else {
+            return rooms[currentRoomIndex];
         }
-        return false;
     }
 
     // Check if inventory contains item
@@ -273,6 +259,9 @@ $(document).ready(function () {
         return Math.floor(Math.random() * 101) % gameObjects.length;
     }
 
+    /*
+        Display Methods
+    */
     //Uses the text for a room to build a string that shows which rooms are next to the current room
     function showAdjacentRooms(e) {
         var newExits = "";
@@ -295,20 +284,37 @@ $(document).ready(function () {
         $('#output').html($('#output').html() + text + "<br>");
     }
 
+    function displayProgress(text) {
+        $('#progressOutput').html($('#progressOutput').html() + text + "<br/>");
+    }
+
+    // Alertify for directions
+    function successfulMove(direction) {
+        alertify.success("<span class='fui-check'></span>&nbsp;&nbsp;&nbsp;Moved " + direction);
+    }
+
+    function unsuccessfulMove(direction) {
+        alertify.error("<span class='fui-cross'></span>&nbsp;&nbsp;&nbsp;Can't move in the " + direction + " direction.");
+    }
+
+    function lostHP(pointsLost, toMonster) {
+        alertify.error("<span class='fui-heart'></span>&nbsp;&nbsp;&nbsp;You lost " + pointsLost + " HP to " + toMonster + ".");
+    }
+
+    function userHasDied() {
+        alertify.error("<span class='fui-heart'></span>&nbsp;&nbsp;&nbsp;You died.");
+    }
+
+    function attackedMonster(monster) {
+        alertify.success("<span class='fui-user'></span>&nbsp;&nbsp;&nbsp;You destroyed " + monster);
+    }
+
     // Simple alertify
     function simple_alertify(text, okButtonTitle) {
         alertify.set({ labels: {
             ok: okButtonTitle
         } });
         alertify.alert('<div class="alertnotification">' + text + "</div>");
-    }
-
-    function currentRoomName(currentRoomIndex) {
-        if (currentRoomIndex > rooms.length) {
-            return "Nowhere"
-        } else {
-            return rooms[currentRoomIndex];
-        }
     }
 
     //Each round we call this function to do all the main game processing 
@@ -329,19 +335,23 @@ $(document).ready(function () {
             if (inventoryContainsItem(powerOfLoveIndex)) {
                 simple_alertify("Nega-Bea appeared and attacked but YOU had the " + gameObjects[powerOfLoveIndex] + " so it's dead.", "Yay now dismiss.");
                 isNegaBeaAlive = false;
+                attackedMonster("Nega-Bea");
             } 
             else if (inventoryContainsItem(powerOfSelfRespectIndex)) 
             {
                 simple_alertify("Nega-Bea appeared and attacked but YOU had the " + gameObjects[powerOfSelfRespectIndex] + " so it's dead.", "Yay now dismiss.");
                 isNegaBeaAlive = false;
+                attackedMonster("Nega-Bea");
             }
             else 
             {
                 // message += "\<br\>Ogre attacks you!";
-                simple_alertify("Nega-Bea appeared and attacked your self-esteem.<br/>You lost 1 HP.", "Dismiss because you feel bad.");
+                simple_alertify("Nega-Bea appeared and attacked your self-esteem.<br/>You got hurt.", "Dismiss because you feel bad.");
+                lostHP(1, "Nega-Bea");
                 hits--;
 
                 if (hits == 0) {
+                    userHasDied();
                     isGameOver = true;
                 }
             }
@@ -361,7 +371,9 @@ $(document).ready(function () {
             else {
                 // message += "\<br\>The dragon attacks you with firebreath and kills you!";
                 simple_alertify("The Shipper appeared and attacked you with its uncomfortable fan fiction. Tough luck kid, you're dead.", "Dismiss");
+                
                 hits = 0;
+                userHasDied();
                 isGameOver = true;
             }
         }
@@ -372,10 +384,11 @@ $(document).ready(function () {
                 simple_alertify("You heard your phone ring and because you had " + gameObjects[randomIndex] + ". You were safe from a potential attack", "Dismiss");
             } 
             else {
-                simple_alertify("You heard your cellphone ring but something attacked you in the dark before you could make sense of it!<br/>You lost 2 HP.", "Dismiss");
+                simple_alertify("You heard your cellphone ring but something attacked you in the dark before you could make sense of it!<br/>You got hurt physically and emotionally.", "Dismiss");
                 hits = hits - 2;
-
+                lostHP(2, "Big 4");
                 if (hits == 0) {
+                    userHasDied();
                     isGameOver = true;
                 }
             }
@@ -431,37 +444,39 @@ $(document).ready(function () {
                 if (exits[currentRoom].indexOf(direction) > -1) {
                     currentRoom -= 8;
                     lastDirection = command;
-                    alertify.success("Moved North")
+                    successfulMove("North");
                 }
-                else
-                    alertify.error("Can't move there");
+                else {
+                    unsuccessfulMove("North");
+                }
                 break;
             case "S":
                 if (exits[currentRoom].indexOf(direction) > -1) {
                     currentRoom += 8;
                     lastDirection = command;
-                    alertify.success("Moved South")
+                    successfulMove("South")
                 }
-                else
-                   alertify.error("Can't move there");
+                else {
+                   unsuccessfulMove("South");
+                }
                 break;
             case "E":
                 if (exits[currentRoom].indexOf(direction) > -1) {
                     currentRoom++;
                     lastDirection = command;
-                    alertify.success("Moved East")
+                    successfulMove("East")
                 }
                 else
-                    alertify.error("Can't move there");
+                    unsuccessfulMove("East");
                 break;
             case "W":
                 if (exits[currentRoom].indexOf(direction) > -1) {
                     currentRoom--;
                     lastDirection = command;
-                    alertify.success("Moved West")
+                    successfulMove("West")
                 }
                 else
-                    alertify.error("Can't move there");
+                    unsuccessfulMove("West");
                 break;
                 //End of Movement Code
             case "P":
@@ -469,13 +484,13 @@ $(document).ready(function () {
                 break
             case "A":
                 alertify.set({ labels: {
-                    ok: "So?"
+                    ok: "Dismiss"
                 } });
-                alertify.alert("<div class='alertnotification'>About<br/>Game built for Bea.</div>");
+                alertify.alert("<div class='alertnotification'><span style='text-decoration: underline;'>About</span><br/><br/>A Game built for Bea.</div>");
                 break
             default:
                 alertify.set({ labels: {
-                    ok: "I'm sorry!"
+                    ok: "I have learned the errors of my ways."
                 } });
                 alertify.alert("<div class='alertnotification'>Opps, only the following commands are valid:<br/><ul><li>N (North)</li><li>S (South)</li><li>E (East)</li><li>W (West)</li><li>P (Pick up)</li><li>A (About)</li></ul></div>");
                 break
@@ -491,34 +506,6 @@ $(document).ready(function () {
 
     //sets the output div to the display variable
     $display = $('#output');
-
-    // This is jQuery selector that picks up an event from the button - in this case we look at the value of the button ie. its text and use that 
-    //to call the same function as we would call from the equivalent keyboard command
-    $(".button").click(function (e) {
-        switch (this.value) {
-            case "N":
-                processGameRound('N');
-                break;
-            case "S":
-                processGameRound('S');
-                break;
-            case "E":
-                processGameRound('E');
-                break;
-            case "W":
-                processGameRound('W');
-                break;
-            case "F":
-                processGameRound('F');
-                break;
-            case "P":
-                pickup(currentRoom);
-                break;
-            case "A":
-                processGameRound('A');
-                break;
-        }
-    });
 
     displayGameScreen();
 });
