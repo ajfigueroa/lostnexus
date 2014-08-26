@@ -27,9 +27,10 @@ header h1 {
   padding-top: 18px;
   padding-bottom: 18px;
   color: #34495e;
+  text-align: center;
 }
 
-#GameDiv, #output {
+#GameDiv, #output, html {
   background: #34495e;
   color: #ffffff;
 }
