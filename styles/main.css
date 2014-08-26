@@ -30,9 +30,16 @@ header h1 {
   text-align: center;
 }
 
-#GameDiv, #output, html, #progressOutput {
+#GameDiv, #output, html, #progressOutput, #userInfo, #lastDirection,
+#userInventory {
   background: #34495e;
   color: #ffffff;
+}
+
+#lastDirection {
+  text-align: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 #progressOutput {
@@ -40,7 +47,7 @@ header h1 {
   width: 650px;
   margin-left: auto;
   margin-right: auto;
-  border: 3px solid #bdc3c7;
+  border: 3px solid #1abc9c;
   border-radius: 6px;
   padding-top: 10px;
   padding-bottom: 10px;
@@ -55,4 +62,13 @@ header h1 {
   width: 800px;
   color: #34495e;
   padding-left: 10px;
+}
+
+#userInfoHeader {
+  text-decoration: underline;
+}
+
+#userInfo div ul {
+  list-style: none;
+  padding-left: 0;
 }

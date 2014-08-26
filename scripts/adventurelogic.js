@@ -9,9 +9,8 @@ $(document).ready(function () {
     alertify.alert("<div class='alertnotification'>Not so long ago in the mysterious land of Toronto, Canada...<br/>A cellphone was lost...</br><br/>Search through each of the rooms for valuable items needed to destroy and retrieve the lost nexus from the one known as the Shipper.<br/>It is rumoured that his weakness is an Exodia Deck and a Reality Cheque<br/><br/>The following commands are valid:<br/><ul><li>N (North)</li><li>S (South)</li><li>E (East)</li><li>W (West)</li><li>P (Pick up)</li><li>A (About)</li></ul></div>");
 
     //game variables    
-    var message,                // screen message to display
-    hits = 10,                  // hit points for the player
-    lightLevel = 100,           // current light level
+    var hits = 10,              // hit points for the player
+    lightLevel = 100,           // current light level (SO USELESS)
     currentRoom = 0,            // initial room  
     exitRoom = 31,              // final room of the dungeon
     isGameOver = false;         // Maintain the state of the game
@@ -146,7 +145,7 @@ $(document).ready(function () {
         var objectIndex = getObjectForRoom(currentRoom);
 
         if (objectIndex != -1) {
-            displayProgress("You can see " + gameObjects[objectIndex % gameObjects.length] + ". Enter 'P' to pick it up!");
+            displayProgress("You can see a " + gameObjects[objectIndex % gameObjects.length] + ". Enter 'P' to pick it up!");
         } else {
             var additionalMessage;
             var baseMessage = "There is nothing of interest here";
@@ -198,25 +197,16 @@ $(document).ready(function () {
 
 
         displayProgress("<br/>You can move in any of the following directions: " + showAdjacentRooms(exits[currentRoom]));
-        displayText("Your last direction was: " + getLastDirection());
-        displayText("");
-        displayText('Current Area #: ' + currentRoom);
-        displayText('Light Level: ' + lightLevel);
-        displayText("HP: " + hits);
 
+        // Debugging purposes.
+        // console.log('Current Area #: ' + currentRoom);
+        updateHP(hits);
+        updateLightLevel(lightLevel);
+        updateLastDirection(getLastDirection());
 
         //If there is something in our inventory then display it
         if (inventory.length > 0) {
-            var inventoryList = "";
-            for (var i = 0; i < inventory.length ; i++) {
-                inventoryList += "<li>" + inventory[i] + "</li>"; // I know it's inefficient, I'm doing it anyways
-            }
-            
-            displayText("Current Inventory: <ul>" + inventoryList + "</ul>");
-        }
-
-        if (message != null) {
-            displayText("<br/>" + message);
+            updateInventory();
         }
 
         //Game over code
@@ -231,7 +221,6 @@ $(document).ready(function () {
                 }
             });
         }
-        message = "What?";
     }
 
     // Returns human readable name for the current room index
@@ -286,6 +275,31 @@ $(document).ready(function () {
 
     function displayProgress(text) {
         $('#progressOutput').html($('#progressOutput').html() + text + "<br/>");
+    }
+
+    function updateHP(hpLevel) {
+        $('#userHP').html(hpLevel);
+    }
+
+    function updateLightLevel(lightLevel) {
+        $("#userLightLevel").html(lightLevel);
+    }
+
+    function updateLastDirection(lastDirection) {
+        $("#userLastDirection").html(lastDirection);
+    }
+
+    function updateInventory() {
+        // First clear previous version.
+        $("#inventoryList").empty();
+
+        var inventoryList = "";
+        // Now iterate and add to this list
+        inventory.forEach(function(inventoryItem) {
+            inventoryList += "<li>" + inventoryItem + "</li>";
+        });
+
+        $("#inventoryList").html("<ul>" + inventoryList + "</ul>");
     }
 
     // Alertify for directions
@@ -345,7 +359,6 @@ $(document).ready(function () {
             }
             else 
             {
-                // message += "\<br\>Ogre attacks you!";
                 simple_alertify("Nega-Bea appeared and attacked your self-esteem.<br/>You got hurt.", "Dismiss because you feel bad.");
                 lostHP(1, "Nega-Bea");
                 hits--;
@@ -369,7 +382,6 @@ $(document).ready(function () {
                 isGameOver = true;           
             }
             else {
-                // message += "\<br\>The dragon attacks you with firebreath and kills you!";
                 simple_alertify("The Shipper appeared and attacked you with its uncomfortable fan fiction. Tough luck kid, you're dead.", "Dismiss");
                 
                 hits = 0;
@@ -437,7 +449,6 @@ $(document).ready(function () {
         // Parse the command quick to make sure it's valid.
         command = parseCommand(command.toUpperCase());
         var direction = command;
-        message = "OK";
         switch (command) {
             //Movement Code
             case "N":
