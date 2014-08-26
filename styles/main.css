@@ -95,6 +95,7 @@ header h1 {
   border-color: #1abc9c;
   border-radius: 6px;
   padding: 0;
+  margin-bottom: 10px;
 }
 
 #userInfo ul, #userInventory ul {
