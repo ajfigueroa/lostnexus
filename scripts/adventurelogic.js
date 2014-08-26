@@ -6,7 +6,7 @@ $(document).ready(function () {
         ok: "Ok, I got it."
     } });
     // button labels will be "Accept" and "Deny"
-    alertify.alert("<div class='alertnotification'>In a land far, far away also known as Toronto, ON...<br/><br/>Search through each of the rooms for valuable items needed to destroy and retrieve Bea's cellphone from the one known as the Shipper.<br/><br/>The following commands are valid:<br/><ul><li>N (North)</li><li>S (South)</li><li>E (East)</li><li>W (West)</li><li>P (Pick up)</li><li>A (About)</li></ul></div>");
+    alertify.alert("<div class='alertnotification'>In a land far, far away also known as Toronto, ON...<br/><br/>Search through each of the rooms for valuable items needed to destroy and retrieve the lost nexus from the one known as the Shipper.<br/>It is rumoured that his weakness is an Exodia Deck and a Reality Cheque<br/><br/>The following commands are valid:<br/><ul><li>N (North)</li><li>S (South)</li><li>E (East)</li><li>W (West)</li><li>P (Pick up)</li><li>A (About)</li></ul></div>");
 
     //game variables    
     var message,                // screen message to display
@@ -15,13 +15,14 @@ $(document).ready(function () {
     currentRoom = 0,            // initial room  
     exitRoom = 31,              // final room of the dungeon
     isGameOver = false;         // Maintain the state of the game
-    isNegaBeaAlive = true,         // Stores the state of the Ogre - Alive/Dead
-    isShipperAlive = true,       // this is the gameover state
-    lastDirection = "";         // Last direction taken.
+    isNegaBeaAlive = true,      // Stores the state of the Ogre - Alive/Dead
+    isShipperAlive = true,      // this is the gameover state
+    lastDirection = "",         // Last direction taken.
+    firstTime = true;           // First time the user is playing the game
 
     //All the rooms in the game
     var rooms = new Array("Union Station", "Honest Eds", 'Rogers Center', "CN Tower", "Air Canada Center", "The Distillery District", 
-                          'Snakes and Lattes', "Alexs House (Don't ask)", "Dance Cave", "Sewers", "Hammark", "Zanzibar VIP Room", 
+                          'Snakes and Lattes', "Alex's House", "Dance Cave", "Sewers", "Hammark", "Zanzibar VIP Room", 
                           "Zanzibar VIP Room", "Curling Rink", "Taxi", "Curling Rink", "Markham", "Construction Zone", "Construction Zone", 
                           "Concrete Jungle", "Greenhouse", "The Annex", "Cat Cafe", "Dance Cave", "Sewers", "Area with good Wind reception (Rare)", 
                           "Zanzibar VIP Room", "Sneaky Dees", "Curling Rink", "Taxi", "Shippers Lair");
@@ -55,10 +56,10 @@ $(document).ready(function () {
                                 "Avenue-Q on Blu-Ray", 
                                 "Markham Street Cred", 
                                 "The missing T in Torono", 
-                                "Tearbending ability", 
+                                "Power of Self Respect", 
                                 "Pestro Card", 
                                 "Guardian Angel", 
-                                "The Power of Love", 
+                                "Power of Love", 
                                 "Old embrassing home video");
 
     //Inventory array Contains all the things you can carry
@@ -148,18 +149,74 @@ $(document).ready(function () {
         $display.empty();
 
         //Display the screen output text - note this does not include the buttons
-        displayText("You are now in the: " + rooms[currentRoom]);
-        displayText("Possible Directions: " + showAdjacentRooms(exits[currentRoom]));
-        displayText("Last direction taken: " + getLastDirection());
+        if (firstTime) {
+            displayText("You start off at: " + rooms[currentRoom]);
+            firstTime = false;
+        } else {
+            displayText("You have walked into: " + rooms[currentRoom]);
+        }
+
+        // Display whats in the room
+        var objectIndex = getObjectForRoom(currentRoom);
+        if (objectIndex != -1) {
+            displayText("You can see " + gameObjects[objectIndex % gameObjects.length] + ". Enter 'P' to pick it up!");
+        } else {
+            var additionalMessage;
+            var baseMessage = "There is nothing of interest here";
+
+            switch (rooms[currentRoom]) {
+                case 'Shippers Lair':
+                    baseMessage = "";
+                    additionalMessage = "The Shipper is here, I hope you have what it takes to destroy it."; 
+                    break;
+                case 'Area with good Wind reception (Rare)':
+                    baseMessage = "";
+                    additionalMessage = "There are rumours one named the Big 4 lies here and is prone to attack.";
+                    break;
+                case 'Cat Cafe':
+                    additionalMessage = ". AW CATS!";
+                    break;
+                case 'Alexs House':
+                    additionalMessage = " assuming you're ignoring that cool guy named Alex.";
+                    break;
+                case 'Dance Cave':
+                    additionalMessage = " but you can spare a few moments to dance, no?";
+                    break;
+                case 'Construction Zone':
+                    additionalMessage = " minus some headaches and rubberneckers.";
+                    break;
+                case 'Hammark':
+                    baseMessage = "";
+                    additionalMessage = "NEGA-BEA's Lair! Your opposite, your negative so probably a bit cooler.";
+                    break;
+                case 'Markham':
+                    additionalMessage = ". Enough said."
+                    break;
+                case 'Zanzibar VIP Room':
+                    additionalMessage = ", well...";
+                    break;
+                case 'CN Tower':
+                    additionalMessage = " except an increasing fear of heights.";
+                    break;
+                case 'Honest Eds':
+                    additionalMessage = " besides some good deals.";
+                    break;
+                default:
+                    additionalMessage = ".";
+                    break;
+            }
+
+            displayText(baseMessage + additionalMessage);
+        }
+
+
+        displayText("You can move in any of the following directions: " + showAdjacentRooms(exits[currentRoom]));
+        displayText("Your last direction was: " + getLastDirection());
         displayText("");
         displayText('Current Area #: ' + currentRoom);
         displayText('Light Level: ' + lightLevel);
         displayText("HP: " + hits);
 
-        var objectIndex = getObjectForRoom(currentRoom);
-        if (objectIndex != -1) {
-            displayText("You can see " + gameObjects[objectIndex % gameObjects.length] + ". Enter 'P' to pick it up!");
-        }
 
         //If there is something in our inventory then display it
         if (inventory.length > 0) {
@@ -235,7 +292,7 @@ $(document).ready(function () {
 
     //Simple js function to display a line of text
     function displayText(text) {
-        $display.html($display.html().toString() + text + "<br>");
+        $('#output').html($('#output').html() + text + "<br>");
     }
 
     // Simple alertify
@@ -266,15 +323,22 @@ $(document).ready(function () {
         //NOw that we have taken the players logic we need to activate the main game room logic
         if (currentRoomName(currentRoom) == "Hammark" && isNegaBeaAlive) {
             //if you are fighting the NegaBea
-            var randomIndex = randomItemIndexFromGameObjects();
+            var powerOfLoveIndex = gameObjects.indexOf("Power of Love");
+            var powerOfSelfRespectIndex = gameObjects.indexOf("Power of Self Respect");
 
-            if (inventoryContainsItem(randomIndex)) {
-                simple_alertify("Nega-Bea appeared and attacked but YOU had the " + gameObjects[randomIndex] + " so it's dead (Think Warm Bodies).", "Yay now dismiss.");
+            if (inventoryContainsItem(powerOfLoveIndex)) {
+                simple_alertify("Nega-Bea appeared and attacked but YOU had the " + gameObjects[powerOfLoveIndex] + " so it's dead.", "Yay now dismiss.");
+                isNegaBeaAlive = false;
+            } 
+            else if (inventoryContainsItem(powerOfSelfRespectIndex)) 
+            {
+                simple_alertify("Nega-Bea appeared and attacked but YOU had the " + gameObjects[powerOfSelfRespectIndex] + " so it's dead.", "Yay now dismiss.");
                 isNegaBeaAlive = false;
             }
-            else {
+            else 
+            {
                 // message += "\<br\>Ogre attacks you!";
-                simple_alertify("Nega-Bea appeared and attacked you and it got away with it cause there was no meddling kids and some dog.", "Shoot, dismiss");
+                simple_alertify("Nega-Bea appeared and attacked your self-esteem.<br/>You lost 1 HP.", "Dismiss because you feel bad.");
                 hits--;
 
                 if (hits == 0) {
@@ -286,32 +350,34 @@ $(document).ready(function () {
         //If you are in the final room and the shipper is still alive
         if (currentRoomName(currentRoom) == "Shippers Lair" && isShipperAlive) {
             //if you are fighting the shipper and you have the deadly combo needed.
-            var randomIndex1 = randomItemIndexFromGameObjects();
-            var randomIndex2 = randomItemIndexFromGameObjects();
+            var exodiaItemIndex = gameObjects.indexOf("Exodia Deck");
+            var realityItemIndex = gameObjects.indexOf("Reality Cheque");
 
-            if (inventoryContainsItem(randomIndex1) && inventoryContainsItem(randomIndex2)) {
-                simple_alertify("The Shipper appeared but you attacked it by combining " + gameObjects[randomIndex1] + " and " + gameObjects[randomIndex2] + "!. He will no longer make weird ships and you got your cellphone back!", "Farewell");
+            if (inventoryContainsItem(exodiaItemIndex) && inventoryContainsItem(realityItemIndex)) {
+                simple_alertify("The Shipper appeared but you attacked it by combining " + gameObjects[exodiaItemIndex] + " and " + gameObjects[realityItemIndex] + "!. He will no longer make weird ships and you got your cellphone back!", "Congrats!");
                 isShipperAlive = false; //End Game
                 isGameOver = true;           
             }
             else {
                 // message += "\<br\>The dragon attacks you with firebreath and kills you!";
-                simple_alertify("The Shipper appeared and attacked you with its uncomfortable shipping combinations sent from your phone. Tough luck kid.", "Ciao");
+                simple_alertify("The Shipper appeared and attacked you with its uncomfortable fan fiction. Tough luck kid, you're dead.", "Dismiss");
                 hits = 0;
                 isGameOver = true;
             }
         }
 
         if (currentRoomName(currentRoom) == "Area with good Wind reception (Rare)") {
-            //if you are fighting the gas room burning torch
             var randomIndex = randomItemIndexFromGameObjects();
             if (inventoryContainsItem(randomIndex)) {
-                simple_alertify("Someone called you but because you had " + gameObjects[randomIndex] + ". You were safe", "Let me continue");
+                simple_alertify("You heard your phone ring and because you had " + gameObjects[randomIndex] + ". You were safe from a potential attack", "Dismiss");
             } 
             else {
-                simple_alertify("Someone important was calling you but you can't pick up because you have no phone so paradox ensued. Sorry!", "Bye");
-                hits = 0;
-                isGameOver = true;
+                simple_alertify("You heard your cellphone ring but something attacked you in the dark before you could make sense of it!<br/>You lost 2 HP.", "Dismiss");
+                hits = hits - 2;
+
+                if (hits == 0) {
+                    isGameOver = true;
+                }
             }
         }
 
