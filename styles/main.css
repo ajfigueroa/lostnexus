@@ -17,6 +17,10 @@
   padding-left: 0;
 }
 
+#output {
+  height: 10px;
+}
+
 header {
   background: #1abc9c;
 }
@@ -72,3 +76,8 @@ header h1 {
   list-style: none;
   padding-left: 0;
 }
+
+.content {
+  padding-bottom: 10px;
+}
+
