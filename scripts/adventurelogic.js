@@ -6,7 +6,12 @@ $(document).ready(function () {
         ok: "Ok, I got it."
     } });
     // button labels will be "Accept" and "Deny"
-    alertify.alert("<div class='alertnotification'>Not so long ago in the mysterious land of Toronto, Canada...<br/>A cellphone was lost...</br><br/>Search through each of the rooms for valuable items needed to destroy and retrieve the lost nexus from the one known as the Shipper.<br/>It is rumoured that his weakness is an Exodia Deck and a Reality Cheque<br/><br/>The following commands are valid:<br/><ul><li>N (North)</li><li>S (South)</li><li>E (East)</li><li>W (West)</li><li>P (Pick up)</li><li>A (About)</li></ul></div>");
+    alertify.alert("<div class='alertnotification'>Not so long ago in the mysterious land of Toronto, Canada...<br/>" +
+                    "A cellphone was lost...</br><br/>" +
+                    "Search through each of the rooms for valuable items needed to destroy and retrieve the lost nexus " + 
+                    "from the one known as the Shipper.<br/>It is rumoured that his weakness is an Exodia Deck and a Reality " +
+                    "Cheque<br/><br/>The following commands are valid:<br/><ul><li>N (North)</li><li>S (South)</li>" + 
+                    "<li>E (East)</li><li>W (West)</li><li>P (Pick up)</li><li>A (About)</li></ul></div>");
 
     //game variables    
     var hits = 10,              // hit points for the player
@@ -40,7 +45,7 @@ $(document).ready(function () {
 
     // We therefore need 27 objects where some can repeat.
     // However, we're only going to allow 20 rooms to have items at a given time so only 20 are needed.
-    var gameObjects = new Array("Metro Pass",
+    var gameObjects = new Array("Chocolate Cake",
                                 "Map of Toronto", 
                                 "Swiss Army Knife", 
                                 "Mint Bag", 
@@ -48,7 +53,7 @@ $(document).ready(function () {
                                 "Exodia Deck", 
                                 "Coins for TTC", 
                                 "Helmet for Walking", 
-                                "Candle Wax", 
+                                "Ear Wax (Not yours)", 
                                 "Plastic Cell Phone", 
                                 "Poutine from PoutineVille", 
                                 "Reality Cheque", 
@@ -196,7 +201,7 @@ $(document).ready(function () {
         }
 
 
-        displayProgress("<br/>You can move in any of the following directions: " + showAdjacentRooms(exits[currentRoom]));
+        displayProgress("<br/>You can move in one of the following directions: " + showAdjacentRooms(exits[currentRoom]));
 
         // Debugging purposes.
         // console.log('Current Area #: ' + currentRoom);
@@ -363,7 +368,7 @@ $(document).ready(function () {
                 lostHP(1, "Nega-Bea");
                 hits--;
 
-                if (hits == 0) {
+                if (hits <= 0) {
                     userHasDied();
                     isGameOver = true;
                 }
@@ -377,7 +382,9 @@ $(document).ready(function () {
             var realityItemIndex = gameObjects.indexOf("Reality Cheque");
 
             if (inventoryContainsItem(exodiaItemIndex) && inventoryContainsItem(realityItemIndex)) {
-                simple_alertify("The Shipper appeared but you attacked it by combining " + gameObjects[exodiaItemIndex] + " and " + gameObjects[realityItemIndex] + "!. He will no longer make weird ships and you got your cellphone back!", "Congrats!");
+                simple_alertify("The Shipper appeared but you attacked it by using obliderate from the " + gameObjects[exodiaItemIndex] + 
+                    " and cashing in the " + gameObjects[realityItemIndex] + "!<br/><br/>He will no longer suggest weird ships and you " + 
+                    "got your cellphone back!", "Congratulation!");
                 isShipperAlive = false; //End Game
                 isGameOver = true;           
             }
@@ -399,7 +406,7 @@ $(document).ready(function () {
                 simple_alertify("You heard your cellphone ring but something attacked you in the dark before you could make sense of it!<br/>You got hurt physically and emotionally.", "Dismiss");
                 hits = hits - 2;
                 lostHP(2, "Big 4");
-                if (hits == 0) {
+                if (hits <= 0) {
                     userHasDied();
                     isGameOver = true;
                 }
@@ -477,8 +484,9 @@ $(document).ready(function () {
                     lastDirection = command;
                     successfulMove("East")
                 }
-                else
+                else {
                     unsuccessfulMove("East");
+                }
                 break;
             case "W":
                 if (exits[currentRoom].indexOf(direction) > -1) {
@@ -486,8 +494,9 @@ $(document).ready(function () {
                     lastDirection = command;
                     successfulMove("West")
                 }
-                else
+                else {
                     unsuccessfulMove("West");
+                }
                 break;
                 //End of Movement Code
             case "P":
@@ -499,6 +508,18 @@ $(document).ready(function () {
                 } });
                 alertify.alert("<div class='alertnotification'><span style='text-decoration: underline;'>About</span><br/><br/>A Game built for Bea.</div>");
                 break
+            case "WHO IS BEA?":
+                alertify.set({ labels: {
+                    ok: "Dismiss"
+                } });
+                alertify.alert("<div class='alertnotification'>Ask her yourself.</div>");
+                break;
+            case "MEATBALLS":
+                alertify.set({ labels: {
+                    ok: "Dismiss"
+                } });
+                alertify.alert("<div class='alertnotification'>Stop that dipface :D</div>");
+                break;
             default:
                 alertify.set({ labels: {
                     ok: "I have learned the errors of my ways."
