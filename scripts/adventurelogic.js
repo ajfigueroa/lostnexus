@@ -11,7 +11,12 @@ $(document).ready(function () {
                     "Search through each of the rooms for valuable items needed to destroy and retrieve the lost nexus " + 
                     "from the one known as the Shipper.<br/>It is rumoured that his weakness is an Exodia Deck and a Reality " +
                     "Cheque<br/><br/>The following commands are valid:<br/><ul><li>N (North)</li><li>S (South)</li>" + 
-                    "<li>E (East)</li><li>W (West)</li><li>P (Pick up)</li><li>A (About)</li></ul></div>");
+                    "<li>E (East)</li><li>W (West)</li><li>P (Pick up)</li><li>A (About)</li></ul></div>", function(e) {
+                        if (e) {
+                            //jquery command to force the textbox to take focus  
+                            $("#userInput").focus();
+                        }
+                    });
 
     //game variables    
     var hits = 10,              // hit points for the player
@@ -76,9 +81,6 @@ $(document).ready(function () {
     // We'll slice the array to 14 of these rooms only so that not every room has an item
     var shuffledRooms = roomsAllowedToHaveItems.sort(function() { return 0.5 - Math.random() });
     var itemLocationRoomNumbers = shuffledRooms.slice(0, 15); // Grab first 14 only
-
-    //jquery command to force the textbox to take focus  
-    $("#userInput").focus();
 
     // Check if item in a room number is valid
     function objectExistsInRoomNumber(roomIndex) {
