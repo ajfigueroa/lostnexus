@@ -1,6 +1,4 @@
 $(document).ready(function () {
-    "use strict";
-
     alertify.set({ labels: {
         ok: "Ok, I got it."
     } });
