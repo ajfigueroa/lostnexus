@@ -1,11 +1,7 @@
-//Our main js code called by Jquery on doc ready
 $(document).ready(function () {
-    // custom OK and Cancel label
-    // default: OK, Cancel
     alertify.set({ labels: {
         ok: "Ok, I got it."
     } });
-    // button labels will be "Accept" and "Deny"
     alertify.alert("<div class='alertnotification'>Not so long ago in the mysterious land of Toronto, Canada...<br/>" +
                     "A cellphone was lost...</br><br/>" +
                     "Search through each of the rooms for valuable items needed to destroy and retrieve the lost nexus " + 
@@ -13,24 +9,24 @@ $(document).ready(function () {
                     "Cheque<br/><br/>The following commands are valid:<br/><ul><li>N (North)</li><li>S (South)</li>" + 
                     "<li>E (East)</li><li>W (West)</li><li>P (Pick up)</li><li>A (About)</li></ul></div>", function(e) {
                         if (e) {
-                            //jquery command to force the textbox to take focus  
+                            // Set focus to the user input textbox
                             $("#userInput").focus();
                         }
                     });
 
-    //game variables    
-    var hits = 10,              // hit points for the player
-    lightLevel = 100,           // current light level (SO USELESS)
-    currentRoom = 0,            // initial room  
-    exitRoom = 31,              // final room of the dungeon
+    // Game variables    
+    var hits = 10,              // Hit points for the player
+    lightLevel = 100,           // Current light level (SO USELESS)
+    currentRoom = 0,            // Initial room  
+    exitRoom = 31,              // Final room of the dungeon
     isGameOver = false;         // Maintain the state of the game
     isNegaBeaAlive = true,      // Stores the state of the Ogre - Alive/Dead
-    isShipperAlive = true,      // this is the gameover state
+    isShipperAlive = true,      // This is the gameover state
     lastDirection = "",         // Last direction taken.
     firstTime = true,           // First time the user is playing the game
     currentNumberOfMoves = 0;   // Move counter, whenever a direction is successful.
 
-    //All the rooms in the game
+    // All the rooms in the game
     var rooms = new Array("Union Station", "Honest Eds", 'Rogers Center', "CN Tower", "Air Canada Center", "The Distillery District", 
                           'Snakes and Lattes', "Alex's House", "Dance Cave", "Sewers", "Hammark", "Zanzibar VIP Room", 
                           "Zanzibar VIP Room", "Curling Rink", "Taxi", "Curling Rink", "Markham", "Construction Zone", "Construction Zone", 
@@ -72,9 +68,9 @@ $(document).ready(function () {
                                 "Power of Love", 
                                 "Old embrassing home video");
 
-    //Inventory array Contains all the things you can carry
+    // Inventory array Contains all the things you can carry
     var inventory = new Array();
-    inventory[0] = "Metro Pass"; //lets start our player off with a metro pass so they can safely venture Toronto
+    inventory[0] = "Metro Pass"; //Let's start off Bea with a metro pass so they can safely venture Toronto
 
     // These represent room numbers where items can be found
     // Shuffle found on: http://css-tricks.com/snippets/javascript/shuffle-array/
@@ -107,7 +103,7 @@ $(document).ready(function () {
         }
     }
 
-    //This function  loops through the object location array and returns
+    // This function  loops through the object location array and returns the index of the object in the room
     function getObjectForRoom(currentRoom) {
         var objectInRoomIndex = -1;
         if (currentRoom == 0) {
@@ -133,14 +129,13 @@ $(document).ready(function () {
         }
     }
 
-    //This is a method/function that shows the game screen. If we look in deatil at this function we can see that 
-    //it uses another function displayText to show each line of the screen.
+    // This is a method/function that shows the game screen. If we look in deatil at this function we can see that 
     function displayGameScreen() {
 
-        //clear the output div
+        // Clear progress div as we're going to update it
         $('#progressOutput').empty();
 
-        //Display the screen output text - note this does not include the buttons
+        // Display progress
         if (firstTime) {
             displayProgress("You start your journey off at " + rooms[currentRoom]);
             firstTime = false;
@@ -205,18 +200,18 @@ $(document).ready(function () {
 
         displayProgress("<br/>You can move in one of the following directions: " + showAdjacentRooms(exits[currentRoom]));
         displayMoveCount();
-        // Debugging purposes.
+        // Debug purposes.
         // console.log('Current Area #: ' + currentRoom);
         updateHP(hits);
         updateLightLevel(lightLevel);
         updateLastDirection(getLastDirection());
 
-        //If there is something in our inventory then display it
+        // If there is something in our inventory then display it
         if (inventory.length > 0) {
             updateInventory();
         }
 
-        //Game over code
+        // Game Over alert and reloading
         if (isGameOver) {
             alertify.set({ labels: {
                 ok: "Fine."
@@ -258,7 +253,8 @@ $(document).ready(function () {
     /*
         Display Methods
     */
-    //Uses the text for a room to build a string that shows which rooms are next to the current room
+    // Uses the text for a room to build a string that shows which rooms are next to the current room
+    // I did not write this. - AF
     function showAdjacentRooms(e) {
         var newExits = "";
         if (e != null) {
@@ -316,7 +312,7 @@ $(document).ready(function () {
         $("#inventoryList").html("<ul>" + inventoryList + "</ul>");
     }
 
-    // Alertify for directions
+    // Alertify Helpers
     function successfulMove(direction) {
         alertify.success("<span class='fui-check'></span>&nbsp;&nbsp;&nbsp;Moved " + direction);
     }
@@ -337,7 +333,6 @@ $(document).ready(function () {
         alertify.success("<span class='fui-user'></span>&nbsp;&nbsp;&nbsp;You destroyed " + monster);
     }
 
-    // Simple alertify
     function simple_alertify(text, okButtonTitle) {
         alertify.set({ labels: {
             ok: okButtonTitle
@@ -345,18 +340,18 @@ $(document).ready(function () {
         alertify.alert('<div class="alertnotification">' + text + "</div>");
     }
 
-    //Each round we call this function to do all the main game processing 
+    // Each round we call this function to do all the main game processing 
     function processGameRound(command) {
 
-        //Remove any spaces from the command text
+        // Remove any spaces from the command text
         trimCommand = $.trim(command);
 
-        //Process command takes the players action
+        // Process command takes the players action
         processCommand(command);
 
-        //NOw that we have taken the players logic we need to activate the main game room logic
+        // Meeting NegaBea (Negative Bea..opps, almost gave that away)
         if (currentRoomName(currentRoom) == "Hammark" && isNegaBeaAlive) {
-            //if you are fighting the NegaBea
+            // You are fighting the NegaBea
             var powerOfLoveIndex = gameObjects.indexOf("Power of Love");
             var powerOfSelfRespectIndex = gameObjects.indexOf("Power of Self Respect");
 
@@ -384,9 +379,9 @@ $(document).ready(function () {
             }
         }
 
-        //If you are in the final room and the shipper is still alive
+        // Meeting the Shipper (Final Boss). Yes, Shipper as in Korrasami shippers.
         if (currentRoomName(currentRoom) == "Shippers Lair" && isShipperAlive) {
-            //if you are fighting the shipper and you have the deadly combo needed.
+            // if you are fighting the shipper and you have the deadly combo needed.
             var exodiaItemIndex = gameObjects.indexOf("Exodia Deck");
             var realityItemIndex = gameObjects.indexOf("Reality Cheque");
 
@@ -406,6 +401,7 @@ $(document).ready(function () {
             }
         }
 
+        // Meeting the Big 4 because you have Wind...get it?
         if (currentRoomName(currentRoom) == "Area with good Wind reception (Rare)") {
             var randomIndex = randomItemIndexFromGameObjects();
             if (inventoryContainsItem(randomIndex)) {
@@ -427,11 +423,10 @@ $(document).ready(function () {
 
     function parseCommand(command) {
         // If the command is the full word, let's use it anyways.
-        // There is probably a better way to do this BUT THIS IS ALL HACKY.
+        // There is probably a better way to do this BUT THIS IS ALL HACKY AND THE POINTS DON'T MATTER.
         var alternateCommand = command;
 
         switch (command) {
-            // Least common cases
             case "NORTH":
                 alternateCommand = 'N';
                 break;
@@ -465,8 +460,8 @@ $(document).ready(function () {
         // Parse the command quick to make sure it's valid.
         command = parseCommand(command.toUpperCase());
         var direction = command;
+
         switch (command) {
-            //Movement Code
             case "N":
                 if (exits[currentRoom].indexOf(direction) > -1) {
                     currentRoom -= 8;
@@ -511,7 +506,6 @@ $(document).ready(function () {
                     unsuccessfulMove("West");
                 }
                 break;
-                //End of Movement Code
             case "P":
                 pickup(currentRoom);
                 break
@@ -541,7 +535,8 @@ $(document).ready(function () {
                 break
         }
     }
-    //JQuery selector that handles the form submit - 
+
+    // Form Submission
     $('#input form').submit(function (evt) {
         processGameRound($('#userInput').val());
 
