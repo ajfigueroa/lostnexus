@@ -26,12 +26,17 @@ $(document).ready(function () {
     firstTime = true,           // First time the user is playing the game
     currentNumberOfMoves = 0;   // Move counter, whenever a direction is successful.
 
+    // Rooms whose names shouldn't change.
+    var shippersLair = "Shippers Lair";
+    var windRoom = "Area with good Wind reception (Rare)";
+    var negaBeaLair = "Hammark";
+
     // All the rooms in the game
     var rooms = ["Union Station", "Honest Eds", "Rogers Center", "CN Tower", "Air Canada Center", "The Distillery District", 
-                 "Snakes and Lattes", "Alex's House", "Dance Cave", "Sewers", "Hammark", "Zanzibar VIP Room", 
+                 "Snakes and Lattes", "Alex's House", "Dance Cave", "Sewers", negaBeaLair, "Zanzibar VIP Room", 
                  "Zanzibar VIP Room", "Curling Rink", "Taxi", "Curling Rink", "Markham", "Construction Zone", "Construction Zone", 
-                 "Concrete Jungle", "Greenhouse", "The Annex", "Cat Cafe", "Dance Cave", "Sewers", "Area with good Wind reception (Rare)", 
-                 "Zanzibar VIP Room", "Sneaky Dees", "Curling Rink", "Taxi", "Shippers Lair"];
+                 "Concrete Jungle", "Greenhouse", "The Annex", "Cat Cafe", "Dance Cave", "Sewers", windRoom, 
+                 "Zanzibar VIP Room", "Sneaky Dees", "Curling Rink", "Taxi", shippersLair];
 
     // Special zones, the 4 rooms are not allowed to have items.
     var offLimitRooms = [0, 10, 25, 30];
@@ -61,7 +66,7 @@ $(document).ready(function () {
                        "Markham Street Cred", 
                        "The missing T in Torono", 
                        "Power of Self Respect", 
-                       "Guru Laghima Action Figure. An Airbender.", 
+                       "Guru Laghima Figurine (An Airbender)", 
                        "Power of Love", 
                        "Old embrassing home video"];
 
@@ -150,11 +155,11 @@ $(document).ready(function () {
             var baseMessage = "There is nothing of interest here";
 
             switch (rooms[currentRoom]) {
-                case 'Shippers Lair':
+                case shippersLair:
                     baseMessage = "";
                     additionalMessage = "The Shipper is here, I hope you have what it takes to destroy it."; 
                     break;
-                case 'Area with good Wind reception (Rare)':
+                case windRoom:
                     baseMessage = "";
                     additionalMessage = "There are rumours one named the Big 4 lies here and is prone to attack.";
                     break;
@@ -170,7 +175,7 @@ $(document).ready(function () {
                 case 'Construction Zone':
                     additionalMessage = " minus some headaches and rubberneckers.";
                     break;
-                case 'Hammark':
+                case negaBeaLair:
                     baseMessage = "";
                     additionalMessage = "NEGA-BEA's Lair! Your opposite, your negative. (so probably a bit cooler)";
                     break;
@@ -337,6 +342,14 @@ $(document).ready(function () {
         alertify.alert('<div class="alertnotification">' + text + "</div>");
     }
 
+    function simple_alertify_closure(text, okButtonTitle, closure) {
+        // Same as simple alertify but adds a custom closure
+        alertify.set({ labels: {
+            ok: okButtonTitle
+        } });
+        alertify.alert('<div class="alertnotification">' + text + "</div>", closure);
+    }
+
     // Each round we call this function to do all the main game processing 
     function processGameRound(command) {
 
@@ -347,7 +360,7 @@ $(document).ready(function () {
         processCommand(command);
 
         // Meeting NegaBea (Negative Bea..opps, almost gave that away)
-        if (currentRoomName(currentRoom) == "Hammark" && isNegaBeaAlive) {
+        if (currentRoomName(currentRoom) == negaBeaLair && isNegaBeaAlive) {
             // You are fighting the NegaBea
             var powerOfLoveIndex = gameObjects.indexOf("Power of Love");
             var powerOfSelfRespectIndex = gameObjects.indexOf("Power of Self Respect");
@@ -367,19 +380,27 @@ $(document).ready(function () {
             }
             else 
             {
-                simple_alertify("Nega-Bea appeared and attacked your self-esteem.<br/>You got hurt.", "Dismiss because you feel bad.");
-                lostHP(1, "Nega-Bea");
-                hits--;
+                simple_alertify_closure("Nega-Bea appeared and attacked your self-esteem.<br/>You got hurt but not badly.", 
+                                        "Dismiss because you feel bad.", 
+                                        function (e) { 
+                                            if (e) { 
+                                                lostHP(1, "Nega-Bea"); 
+                                                hits--;
 
-                if (hits <= 0) {
-                    userHasDied();
-                    isGameOver = true;
-                }
+                                                if (hits <= 0) {
+                                                    // Set hits to 0, negative is possible and would freak people out.
+                                                    hits = 0;
+                                                    userHasDied();
+                                                    isGameOver = true;
+                                                    displayGameScreen();
+                                                }
+                                            } 
+                                        });
             }
         }
 
         // Meeting the Shipper (Final Boss). Yes, Shipper as in Korrasami shippers.
-        if (currentRoomName(currentRoom) == "Shippers Lair" && isShipperAlive) {
+        if (currentRoomName(currentRoom) == shippersLair && isShipperAlive) {
             // if you are fighting the shipper and you have the deadly combo needed.
             var exodiaItemIndex = gameObjects.indexOf("Exodia Deck");
             var realityItemIndex = gameObjects.indexOf("Reality Cheque");
@@ -392,30 +413,44 @@ $(document).ready(function () {
                 isGameOver = true;           
             }
             else {
-                simple_alertify("The Shipper appeared and attacked you with its uncomfortable fan fiction. Tough luck kid, you're dead.", "Dismiss");
-                
-                hits = 0;
-                userHasDied();
-                isGameOver = true;
+                simple_alertify_closure("The Shipper appeared and attacked you with its uncomfortable fan fiction. Tough luck kid, you're dead.", 
+                                        "Dismiss",
+                                        function (e) {
+                                            if (e) {
+                                                hits = 0;
+                                                userHasDied();
+                                                isGameOver = true;
+                                                displayGameScreen(); // Refresh.
+                                            }
+                                        });
             }
         }
 
-        // Meeting the Big 4 because you have Wind...get it?
-        if (currentRoomName(currentRoom) == "Area with good Wind reception (Rare)") {
+        // Meeting the Big 4 because you have Wind...get it? His Attack is also 4 now...
+        if (currentRoomName(currentRoom) == windRoom) {
             var randomIndex = randomItemIndexFromGameObjects();
             if (inventoryContainsItem(randomIndex)) {
                 simple_alertify("You heard your phone ring and because you had " + gameObjects[randomIndex] + 
                     ". You were safe from a potential attack", "Dismiss");
             } 
             else {
-                simple_alertify("You heard your cellphone ring but something attacked you in the dark before you could make sense " +
-                    "of it!<br/>You got hurt physically and emotionally.", "Dismiss");
-                hits = hits - 2;
-                lostHP(2, "Big 4");
-                if (hits <= 0) {
-                    userHasDied();
-                    isGameOver = true;
-                }
+                simple_alertify_closure("You heard your cellphone ring but the Big 4 attacked you<br/>in the dark before you could make sense " +
+                                        "of it!<br/>You got hurt physically and emotionally.", 
+                                        "Dismiss", 
+                                        function (e) { 
+                                            if (e) { 
+                                                lostHP(4, "Big 4"); 
+
+                                                hits = hits - 4;
+                                                if (hits <= 0) {
+                                                    hits = 0;
+                                                    userHasDied();
+                                                    isGameOver = true;
+                                                }
+
+                                                displayGameScreen();
+                                            } 
+                                        });
             }
         }
 
