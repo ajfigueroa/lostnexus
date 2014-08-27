@@ -1,4 +1,6 @@
 $(document).ready(function () {
+    "use strict";
+
     alertify.set({ labels: {
         ok: "Ok, I got it."
     } });
@@ -7,7 +9,7 @@ $(document).ready(function () {
                     "Search through each of the rooms for valuable items needed to destroy and retrieve the lost nexus " + 
                     "from the one known as the Shipper.<br/>It is rumoured that his weakness is an Exodia Deck and a Reality " +
                     "Cheque<br/><br/>The following commands are valid:<br/><ul><li>N (North)</li><li>S (South)</li>" + 
-                    "<li>E (East)</li><li>W (West)</li><li>P (Pick up)</li><li>A (About)</li></ul></div>", function(e) {
+                    "<li>E (East)</li><li>W (West)</li><li>P (Pick up)</li><li>A (About)</li></ul></div>", function (e) {
                         if (e) {
                             // Set focus to the user input textbox
                             $("#userInput").focus();
@@ -19,7 +21,7 @@ $(document).ready(function () {
     lightLevel = 100,           // Current light level (SO USELESS)
     currentRoom = 0,            // Initial room  
     exitRoom = 31,              // Final room of the dungeon
-    isGameOver = false;         // Maintain the state of the game
+    isGameOver = false,         // Maintain the state of the game
     isNegaBeaAlive = true,      // Stores the state of the Ogre - Alive/Dead
     isShipperAlive = true,      // This is the gameover state
     lastDirection = "",         // Last direction taken.
@@ -27,56 +29,53 @@ $(document).ready(function () {
     currentNumberOfMoves = 0;   // Move counter, whenever a direction is successful.
 
     // All the rooms in the game
-    var rooms = new Array("Union Station", "Honest Eds", 'Rogers Center', "CN Tower", "Air Canada Center", "The Distillery District", 
-                          'Snakes and Lattes', "Alex's House", "Dance Cave", "Sewers", "Hammark", "Zanzibar VIP Room", 
-                          "Zanzibar VIP Room", "Curling Rink", "Taxi", "Curling Rink", "Markham", "Construction Zone", "Construction Zone", 
-                          "Concrete Jungle", "Greenhouse", "The Annex", "Cat Cafe", "Dance Cave", "Sewers", "Area with good Wind reception (Rare)", 
-                          "Zanzibar VIP Room", "Sneaky Dees", "Curling Rink", "Taxi", "Shippers Lair");
+    var rooms = ["Union Station", "Honest Eds", "Rogers Center", "CN Tower", "Air Canada Center", "The Distillery District", 
+                 "Snakes and Lattes", "Alex's House", "Dance Cave", "Sewers", "Hammark", "Zanzibar VIP Room", 
+                 "Zanzibar VIP Room", "Curling Rink", "Taxi", "Curling Rink", "Markham", "Construction Zone", "Construction Zone", 
+                 "Concrete Jungle", "Greenhouse", "The Annex", "Cat Cafe", "Dance Cave", "Sewers", "Area with good Wind reception (Rare)", 
+                 "Zanzibar VIP Room", "Sneaky Dees", "Curling Rink", "Taxi", "Shippers Lair"];
 
-    // 4 rooms are not as they are special zones.
+    // Special zones, the 4 rooms are not allowed to have items.
     var offLimitRooms = [0, 10, 25, 30];
-
-    // 27 rooms are allowed to have items
+    // The 27 rooms are allowed to have items
     var roomsAllowedToHaveItems = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28, 29];
-
-    // Kind of useless but this isn't all my code so HEY.
-    var exits = new Array("E", "SWE", "WE", "SWE", "WE", "WE", "SWE", "WS",
-                          "NSE", "SE", "WE", "NW", "SE", "W", "SNE", "NSW",
-                          "NS", "NS", "SE", "WE", "NWE", "SWE", "WS", "N",
-                          "N", "NWE", "NWE", "WE", "WE", "NW", "NE", "W");
+    
+    // Kind of useless in this application but this isn't all my code so...
+    var exits = ["E", "SWE", "WE", "SWE", "WE", "WE", "SWE", "WS",
+                 "NSE", "SE", "WE", "NW", "SE", "W", "SNE", "NSW",
+                 "NS", "NS", "SE", "WE", "NWE", "SWE", "WS", "N",
+                 "N", "NWE", "NWE", "WE", "WE", "NW", "NE", "W"];
 
     // We therefore need 27 objects where some can repeat.
     // However, we're only going to allow 20 rooms to have items at a given time so only 20 are needed.
-    var gameObjects = new Array("Chocolate Cake",
-                                "Map of Toronto", 
-                                "Swiss Army Knife", 
-                                "Mint Bag", 
-                                "Goblet of Fire (The Book)", 
-                                "Exodia Deck", 
-                                "Coins for TTC", 
-                                "Helmet for Walking", 
-                                "Ear Wax (Not yours)", 
-                                "Plastic Cell Phone", 
-                                "Poutine from PoutineVille", 
-                                "Reality Cheque", 
-                                "Avenue-Q on Blu-Ray", 
-                                "Markham Street Cred", 
-                                "The missing T in Torono", 
-                                "Power of Self Respect", 
-                                "Pestro Card", 
-                                "Guardian Angel", 
-                                "Power of Love", 
-                                "Old embrassing home video");
+    var gameObjects = ["Chocolate Cake",
+                       "Map of Toronto", 
+                       "Swiss Army Knife", 
+                       "Mint Bag", 
+                       "Goblet of Fire (The Book)", 
+                       "Exodia Deck", 
+                       "Coins for TTC", 
+                       "Helmet for Walking", 
+                       "Ear Wax (Not yours)", 
+                       "Poutine from PoutineVille", 
+                       "Reality Cheque", 
+                       "Avenue-Q on Blu-Ray", 
+                       "Markham Street Cred", 
+                       "The missing T in Torono", 
+                       "Power of Self Respect", 
+                       "Guru Laghima Action Figure. An Airbender.", 
+                       "Power of Love", 
+                       "Old embrassing home video"];
 
     // Inventory array Contains all the things you can carry
-    var inventory = new Array();
+    var inventory = [];
     inventory[0] = "Metro Pass"; //Let's start off Bea with a metro pass so they can safely venture Toronto
 
     // These represent room numbers where items can be found
     // Shuffle found on: http://css-tricks.com/snippets/javascript/shuffle-array/
     // We'll slice the array to 14 of these rooms only so that not every room has an item
-    var shuffledRooms = roomsAllowedToHaveItems.sort(function() { return 0.5 - Math.random() });
-    var itemLocationRoomNumbers = shuffledRooms.slice(0, 15); // Grab first 14 only
+    var shuffledRooms = roomsAllowedToHaveItems.sort(function () { return 0.5 - Math.random(); });
+    var itemLocationRoomNumbers = shuffledRooms.slice(0, 19); // Grab first 18 only
 
     // Check if item in a room number is valid
     function objectExistsInRoomNumber(roomIndex) {
@@ -91,22 +90,22 @@ $(document).ready(function () {
     }
 
     // Pickup the object in this room
-    var pickup = function(roomIndex) {
+    var pickup = function (roomIndex) {
         if (objectExistsInRoomNumber(roomIndex)) {
             // If there is an object here...
             var itemIndex = getObjectForRoom(roomIndex);
-            inventory[inventory.length] = gameObjects[itemIndex % gameObjects.length]
+            inventory[inventory.length] = gameObjects[itemIndex % gameObjects.length];
             itemLocationRoomNumbers[itemIndex] = 999;
             alertify.success("You successfully picked up " + gameObjects[itemIndex % gameObjects.length]);
         } else {
             alertify.error("There are no items to pick up here");
         }
-    }
+    };
 
     // This function  loops through the object location array and returns the index of the object in the room
     function getObjectForRoom(currentRoom) {
         var objectInRoomIndex = -1;
-        if (currentRoom == 0) {
+        if (currentRoom === 0) {
             return objectInRoomIndex;
         }
 
@@ -116,12 +115,12 @@ $(document).ready(function () {
                 break;
             }
         }
-        return objectInRoomIndex
+        return objectInRoomIndex;
     }
 
     // Returns the last direction if applicable
     function getLastDirection() {
-        if (lastDirection == "") {
+        if (lastDirection === "") {
             return "You haven't moved yet, silly goose!";
         }
         else {
@@ -178,7 +177,7 @@ $(document).ready(function () {
                     additionalMessage = "NEGA-BEA's Lair! Your opposite, your negative. (so probably a bit cooler)";
                     break;
                 case 'Markham':
-                    additionalMessage = ". Enough said."
+                    additionalMessage = ". Pretty boring.";
                     break;
                 case 'Zanzibar VIP Room':
                     additionalMessage = ", well...";
@@ -216,7 +215,7 @@ $(document).ready(function () {
             alertify.set({ labels: {
                 ok: "Fine."
             } });
-            alertify.alert("<div class='alertnotification'>Game Over</div>", function(e) {
+            alertify.alert("<div class='alertnotification'>Game Over</div>", function (e) {
                 if (e) {
                     // Reload the page
                     location.reload();
@@ -228,7 +227,7 @@ $(document).ready(function () {
     // Returns human readable name for the current room index
     function currentRoomName(currentRoomIndex) {
         if (currentRoomIndex > rooms.length) {
-            return "Nowhere"
+            return "Nowhere";
         } else {
             return rooms[currentRoomIndex];
         }
@@ -257,7 +256,7 @@ $(document).ready(function () {
     // I did not write this. - AF
     function showAdjacentRooms(e) {
         var newExits = "";
-        if (e != null) {
+        if (e !== null) {
             for (i = 0; i < e.length; i++) {
                 if (i === e.length - 1) {
                     newExits += e.substring(i, i + 1);
@@ -305,7 +304,7 @@ $(document).ready(function () {
 
         var inventoryList = "";
         // Now iterate and add to this list
-        inventory.forEach(function(inventoryItem) {
+        inventory.forEach(function (inventoryItem) {
             inventoryList += "<li>" + inventoryItem + "</li>";
         });
 
@@ -356,13 +355,15 @@ $(document).ready(function () {
             var powerOfSelfRespectIndex = gameObjects.indexOf("Power of Self Respect");
 
             if (inventoryContainsItem(powerOfLoveIndex)) {
-                simple_alertify("Nega-Bea appeared and attacked but YOU had the " + gameObjects[powerOfLoveIndex] + " so it's dead.", "Yay now dismiss.");
+                simple_alertify("Nega-Bea appeared and attacked but YOU had the " + gameObjects[powerOfLoveIndex] + 
+                    " so it's dead.", "Yay now dismiss.");
                 isNegaBeaAlive = false;
                 attackedMonster("Nega-Bea");
             } 
             else if (inventoryContainsItem(powerOfSelfRespectIndex)) 
             {
-                simple_alertify("Nega-Bea appeared and attacked but YOU had the " + gameObjects[powerOfSelfRespectIndex] + " so it's dead.", "Yay now dismiss.");
+                simple_alertify("Nega-Bea appeared and attacked but YOU had the " + gameObjects[powerOfSelfRespectIndex] + 
+                    " so it's dead.", "Yay now dismiss.");
                 isNegaBeaAlive = false;
                 attackedMonster("Nega-Bea");
             }
@@ -405,10 +406,12 @@ $(document).ready(function () {
         if (currentRoomName(currentRoom) == "Area with good Wind reception (Rare)") {
             var randomIndex = randomItemIndexFromGameObjects();
             if (inventoryContainsItem(randomIndex)) {
-                simple_alertify("You heard your phone ring and because you had " + gameObjects[randomIndex] + ". You were safe from a potential attack", "Dismiss");
+                simple_alertify("You heard your phone ring and because you had " + gameObjects[randomIndex] + 
+                    ". You were safe from a potential attack", "Dismiss");
             } 
             else {
-                simple_alertify("You heard your cellphone ring but something attacked you in the dark before you could make sense of it!<br/>You got hurt physically and emotionally.", "Dismiss");
+                simple_alertify("You heard your cellphone ring but something attacked you in the dark before you could make sense " +
+                    "of it!<br/>You got hurt physically and emotionally.", "Dismiss");
                 hits = hits - 2;
                 lostHP(2, "Big 4");
                 if (hits <= 0) {
@@ -478,7 +481,7 @@ $(document).ready(function () {
                     currentRoom += 8;
                     lastDirection = command;
                     incrementMoveCount();
-                    successfulMove("South")
+                    successfulMove("South");
                 }
                 else {
                    unsuccessfulMove("South");
@@ -489,7 +492,7 @@ $(document).ready(function () {
                     currentRoom++;
                     lastDirection = command;
                     incrementMoveCount();
-                    successfulMove("East")
+                    successfulMove("East");
                 }
                 else {
                     unsuccessfulMove("East");
@@ -500,7 +503,7 @@ $(document).ready(function () {
                     currentRoom--;
                     lastDirection = command;
                     incrementMoveCount();
-                    successfulMove("West")
+                    successfulMove("West");
                 }
                 else {
                     unsuccessfulMove("West");
@@ -508,13 +511,14 @@ $(document).ready(function () {
                 break;
             case "P":
                 pickup(currentRoom);
-                break
+                break;
             case "A":
                 alertify.set({ labels: {
                     ok: "Dismiss"
                 } });
-                alertify.alert("<div class='alertnotification'><span style='text-decoration: underline;'>About</span><br/><br/>A Game built for Bea.</div>");
-                break
+                alertify.alert("<div class='alertnotification'><span style='text-decoration: underline;'>About</span><br/>" +
+                    "<br/>A Game built for Bea.</div>");
+                break;
             case "WHO IS BEA?":
                 alertify.set({ labels: {
                     ok: "Dismiss"
@@ -531,8 +535,9 @@ $(document).ready(function () {
                 alertify.set({ labels: {
                     ok: "I have learned the errors of my ways."
                 } });
-                alertify.alert("<div class='alertnotification'>Opps, only the following commands are valid:<br/><ul><li>N (North)</li><li>S (South)</li><li>E (East)</li><li>W (West)</li><li>P (Pick up)</li><li>A (About)</li></ul></div>");
-                break
+                alertify.alert("<div class='alertnotification'>Opps, only the following commands are valid:<br/><ul><li>N (North)</li>" +
+                    "<li>S (South)</li><li>E (East)</li><li>W (West)</li><li>P (Pick up)</li><li>A (About)</li></ul></div>");
+                break;
         }
     }
 
