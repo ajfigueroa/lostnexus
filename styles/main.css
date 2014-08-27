@@ -35,7 +35,7 @@ header h1 {
 }
 
 #GameDiv, #output, html, #progressOutput, #userInfo, #lastDirection,
-#userInventory {
+#userInventory, #moveCounter {
   background: #34495e;
   color: #ffffff;
 }
@@ -43,6 +43,12 @@ header h1 {
 #lastDirection {
   text-align: center;
   padding-top: 10px;
+  padding-bottom: 5px;
+}
+
+#moveCounter {
+  text-align: center;
+  padding-top: 0px;
   padding-bottom: 10px;
 }
 
@@ -59,7 +65,12 @@ header h1 {
 
 #keyboard {
   padding-top: 50px;
-  padding-bottom: 20px;
+  padding-bottom: 5px;
+}
+
+.inputarrow {
+  color: white;
+  padding-right: 15px;
 }
 
 #userInput {
@@ -95,7 +106,7 @@ header h1 {
   border-color: #1abc9c;
   border-radius: 6px;
   padding: 0;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 #userInfo ul, #userInventory ul {

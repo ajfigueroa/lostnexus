@@ -23,32 +23,24 @@
         </header>
 
         <div class="container maincontainer">
-          <div class="content">
-              <div id="screenContainer">
-                  <div id="display">
-                      <div id="input">
-                          <form class="gameform">
-                              <!--Screen Sub-Title-->
-                              <div id="GameDiv">
-                                  <!--The following div is hidden or shown depending on if its a non-mobile browser-->
-                                  <div id="keyboard">
-                                      <!-- <label>Command:</label> -->
-                                      <span class="fui-arrow-right"></span>
-                                      <input type="text" name="userInput" class="buttonMod" id="userInput" 
-                                      placeholder="Enter your command here."/> 
-                                  </div>
-                                  <br/>
-                              </div>
-                          </form>
-                      </div>
-                  </div>
-              </div>
+          <div id="input">
+              <form class="gameform">
+                <div id="keyboard">
+                    <span class="fui-arrow-right inputarrow"></span>
+                    <input type="text" name="userInput" class="buttonMod" id="userInput" placeholder="Enter your command here."/> 
+                </div>
+                <br/>
+              </form>
           </div>
+
           <div id="progressOutput"></div>
+
           <div id="lastDirection">
             <span class="fui-location"></span>&nbsp;&nbsp;Last direction taken: <span id="userLastDirection"></span>
           </div>
-
+          <div id="moveCounter">
+            <span class="fui-play"></span>&nbsp;&nbsp;Move Counter: <span id="currentMoveCount"></span>
+          </div>
           
           <div id="userInfo" class="col-md-4 col-md-offset-2 pull-left">
             <div id="userInfoHeader">
@@ -72,6 +64,7 @@
             </div>
           </div>
         </div>
+
         <div class="footer">
           <div class="container">
             <p class="text">Simple adventure game based off a heavily modified <a href="http://domscode.com/2013/05/07/1160/">Search</a> 

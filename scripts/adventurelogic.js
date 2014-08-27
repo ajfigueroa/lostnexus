@@ -22,7 +22,8 @@ $(document).ready(function () {
     isNegaBeaAlive = true,      // Stores the state of the Ogre - Alive/Dead
     isShipperAlive = true,      // this is the gameover state
     lastDirection = "",         // Last direction taken.
-    firstTime = true;           // First time the user is playing the game
+    firstTime = true,           // First time the user is playing the game
+    currentNumberOfMoves = 0;   // Move counter, whenever a direction is successful.
 
     //All the rooms in the game
     var rooms = new Array("Union Station", "Honest Eds", 'Rogers Center', "CN Tower", "Air Canada Center", "The Distillery District", 
@@ -135,7 +136,6 @@ $(document).ready(function () {
     function displayGameScreen() {
 
         //clear the output div
-        $display.empty();
         $('#progressOutput').empty();
 
         //Display the screen output text - note this does not include the buttons
@@ -178,7 +178,7 @@ $(document).ready(function () {
                     break;
                 case 'Hammark':
                     baseMessage = "";
-                    additionalMessage = "NEGA-BEA's Lair! Your opposite, your negative so probably a bit cooler.";
+                    additionalMessage = "NEGA-BEA's Lair! Your opposite, your negative. (so probably a bit cooler)";
                     break;
                 case 'Markham':
                     additionalMessage = ". Enough said."
@@ -202,7 +202,7 @@ $(document).ready(function () {
 
 
         displayProgress("<br/>You can move in one of the following directions: " + showAdjacentRooms(exits[currentRoom]));
-
+        displayMoveCount();
         // Debugging purposes.
         // console.log('Current Area #: ' + currentRoom);
         updateHP(hits);
@@ -273,9 +273,16 @@ $(document).ready(function () {
         return newExits;
     }
 
-    //Simple js function to display a line of text
-    function displayText(text) {
-        $('#output').html($('#output').html() + text + "<br>");
+    function incrementMoveCount() {
+        currentNumberOfMoves++;
+    }
+
+    function getMoveCount() {
+        return currentNumberOfMoves;
+    }
+
+    function displayMoveCount() {
+        $('#currentMoveCount').html(currentNumberOfMoves);
     }
 
     function displayProgress(text) {
@@ -384,7 +391,7 @@ $(document).ready(function () {
             if (inventoryContainsItem(exodiaItemIndex) && inventoryContainsItem(realityItemIndex)) {
                 simple_alertify("The Shipper appeared but you attacked it by using obliderate from the " + gameObjects[exodiaItemIndex] + 
                     " and cashing in the " + gameObjects[realityItemIndex] + "!<br/><br/>He will no longer suggest weird ships and you " + 
-                    "got your cellphone back!", "Congratulation!");
+                    "got your cellphone back!<br/><br/>You finished in " + getMoveCount() + " moves.", "Congratulation!");
                 isShipperAlive = false; //End Game
                 isGameOver = true;           
             }
@@ -462,6 +469,7 @@ $(document).ready(function () {
                 if (exits[currentRoom].indexOf(direction) > -1) {
                     currentRoom -= 8;
                     lastDirection = command;
+                    incrementMoveCount();
                     successfulMove("North");
                 }
                 else {
@@ -472,6 +480,7 @@ $(document).ready(function () {
                 if (exits[currentRoom].indexOf(direction) > -1) {
                     currentRoom += 8;
                     lastDirection = command;
+                    incrementMoveCount();
                     successfulMove("South")
                 }
                 else {
@@ -482,6 +491,7 @@ $(document).ready(function () {
                 if (exits[currentRoom].indexOf(direction) > -1) {
                     currentRoom++;
                     lastDirection = command;
+                    incrementMoveCount();
                     successfulMove("East")
                 }
                 else {
@@ -492,6 +502,7 @@ $(document).ready(function () {
                 if (exits[currentRoom].indexOf(direction) > -1) {
                     currentRoom--;
                     lastDirection = command;
+                    incrementMoveCount();
                     successfulMove("West")
                 }
                 else {
@@ -535,9 +546,6 @@ $(document).ready(function () {
         $('#userInput').val('');
         evt.preventDefault();
     });
-
-    //sets the output div to the display variable
-    $display = $('#output');
 
     displayGameScreen();
 });
