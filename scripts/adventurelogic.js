@@ -257,7 +257,7 @@ $(document).ready(function () {
     function showAdjacentRooms(e) {
         var newExits = "";
         if (e !== null) {
-            for (i = 0; i < e.length; i++) {
+            for (var i = 0; i < e.length; i++) {
                 if (i === e.length - 1) {
                     newExits += e.substring(i, i + 1);
                 } else if (i === e.length - 2) {
