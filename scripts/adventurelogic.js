@@ -392,8 +392,9 @@ $(document).ready(function () {
                                                     hits = 0;
                                                     userHasDied();
                                                     isGameOver = true;
-                                                    displayGameScreen();
                                                 }
+
+                                                displayGameScreen();
                                             } 
                                         });
             }
