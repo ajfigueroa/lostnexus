@@ -24,7 +24,8 @@ $(document).ready(function () {
     isShipperAlive = true,      // This is the gameover state
     lastDirection = "",         // Last direction taken.
     firstTime = true,           // First time the user is playing the game
-    currentNumberOfMoves = 0;   // Move counter, whenever a direction is successful.
+    currentNumberOfMoves = 0,   // Move counter, whenever a direction is successful.
+    directionalMovePerformed = true; // Used to determine when a command is a directional move. True by default but will change through lifetime.
 
     // Rooms whose names shouldn't change.
     var shippersLair = "Shippers Lair";
@@ -249,7 +250,14 @@ $(document).ready(function () {
 
     // Random item getter
     function randomItemIndexFromGameObjects() {
-        return Math.floor(Math.random() * 101) % gameObjects.length;
+        return randomIntFromInterval(0, 101) % gameObjects.length;
+    }
+
+    // Random number generator
+    // Thank you Francisc: http://stackoverflow.com/a/7228322/1631577
+    function randomIntFromInterval(min, max)
+    {
+        return Math.floor(Math.random() * (max - min + 1) + min);
     }
 
     /*
@@ -358,6 +366,12 @@ $(document).ready(function () {
 
         // Process command takes the players action
         processCommand(command);
+
+        if (!directionalMovePerformed) {
+            // This means an unsuccessful N, E, W, or S was entered and the user has not moved yet.
+            // Get the heck out of here!
+            return;
+        }
 
         // Meeting NegaBea (Negative Bea..opps, almost gave that away)
         if (currentRoomName(currentRoom) == negaBeaLair && isNegaBeaAlive) {
@@ -505,9 +519,11 @@ $(document).ready(function () {
                     lastDirection = command;
                     incrementMoveCount();
                     successfulMove("North");
+                    directionalMovePerformed = true;
                 }
                 else {
                     unsuccessfulMove("North");
+                    directionalMovePerformed = false;
                 }
                 break;
             case "S":
@@ -516,9 +532,11 @@ $(document).ready(function () {
                     lastDirection = command;
                     incrementMoveCount();
                     successfulMove("South");
+                    directionalMovePerformed = true;
                 }
                 else {
                    unsuccessfulMove("South");
+                   directionalMovePerformed = false;
                 }
                 break;
             case "E":
@@ -527,9 +545,11 @@ $(document).ready(function () {
                     lastDirection = command;
                     incrementMoveCount();
                     successfulMove("East");
+                    directionalMovePerformed = true;
                 }
                 else {
                     unsuccessfulMove("East");
+                    directionalMovePerformed = false;
                 }
                 break;
             case "W":
@@ -538,13 +558,16 @@ $(document).ready(function () {
                     lastDirection = command;
                     incrementMoveCount();
                     successfulMove("West");
+                    directionalMovePerformed = true;
                 }
                 else {
                     unsuccessfulMove("West");
+                    directionalMovePerformed = false;
                 }
                 break;
             case "P":
                 pickup(currentRoom);
+                directionalMovePerformed = false;
                 break;
             case "A":
                 alertify.set({ labels: {
@@ -552,18 +575,50 @@ $(document).ready(function () {
                 } });
                 alertify.alert("<div class='alertnotification'><span style='text-decoration: underline;'>About</span><br/>" +
                     "<br/>A Game built for Bea.</div>");
+                directionalMovePerformed = false;
                 break;
             case "WHO IS BEA?":
                 alertify.set({ labels: {
                     ok: "Dismiss"
                 } });
                 alertify.alert("<div class='alertnotification'>Ask her yourself.</div>");
+                directionalMovePerformed = false;
                 break;
             case "MEATBALLS":
                 alertify.set({ labels: {
                     ok: "Dismiss"
                 } });
                 alertify.alert("<div class='alertnotification'>Stop that dipface :D</div>");
+                directionalMovePerformed = false;
+                break;
+            case "DANCE":
+                if (currentRoomName(currentRoom) == "Dance Cave") {
+                    // They're dancing in the dance cave, not sure why.
+                    alertify.set({ labels: {
+                        ok: "Dismiss"
+                    } });
+
+                    // Grab a run number from 1 to 3 and give a random message depending on the text
+                    var randomNumber = randomIntFromInterval(1, 4);
+                    var text = "Stop that dancing, Kevin Bacon.";
+                    switch (randomNumber) {
+                        case 1:
+                            text = "You performed a interpretative dance, it wasn't very effective.";
+                            break;
+                        case 2:
+                            text = "Zuko and you performed the Dancing Dragon but you still need to finish this game.";
+                            break;
+                        case 3:
+                            text = "(>'-')> <('-'<) ^('-')^ v('-')v <('-'<) ^('-')^ (>'-')>";
+                            break;
+                        default:
+                            // Do nada.
+                            break;
+                    }
+
+                    alertify.alert("<div class='alertnotification'>" + text + "</div>");
+                }
+                directionalMovePerformed = false;
                 break;
             default:
                 alertify.set({ labels: {
@@ -571,6 +626,7 @@ $(document).ready(function () {
                 } });
                 alertify.alert("<div class='alertnotification'>Opps, only the following commands are valid:<br/><ul><li>N (North)</li>" +
                     "<li>S (South)</li><li>E (East)</li><li>W (West)</li><li>P (Pick up)</li><li>A (About)</li></ul></div>");
+                directionalMovePerformed = false;
                 break;
         }
     }
