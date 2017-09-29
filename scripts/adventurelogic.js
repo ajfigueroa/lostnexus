@@ -89,7 +89,7 @@ $(document).ready(function () {
             return false;
         }
 
-        // Now, check in the item list that this number is not 999 (OUR EDGE case for items out of play).
+        // Now check in the item list that this number is not 999 (OUR EDGE case for items out of play).
         return itemLocationRoomNumbers[objectInRoomIndex] != 999;
     }
 
