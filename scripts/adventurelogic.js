@@ -22,7 +22,7 @@ $(document).ready(function () {
     isGameOver = false,         // Maintain the state of the game
     isNegaBeaAlive = true,      // Stores the state of the Ogre - Alive/Dead
     isShipperAlive = true,      // This is the gameover state
-    lastDirection = "",         // Last direction taken.
+    lastDirection = "",         // Last direction taken
     firstTime = true,           // First time the user is playing the game
     currentNumberOfMoves = 0,   // Move counter, whenever a direction is successful.
     directionalMovePerformed = true; // Used to determine when a command is a directional move. True by default but will change through lifetime.
