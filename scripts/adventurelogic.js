@@ -351,7 +351,7 @@ $(document).ready(function () {
     }
 
     function simple_alertify_closure(text, okButtonTitle, closure) {
-        // Same as simple alertify but adds a custom closure
+        // Same as simple alertify, but adds a custom closure
         alertify.set({ labels: {
             ok: okButtonTitle
         } });
