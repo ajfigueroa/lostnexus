@@ -24,7 +24,7 @@ $(document).ready(function () {
     isShipperAlive = true,      // This is the gameover state
     lastDirection = "",         // Last direction taken.
     firstTime = true,           // First time the user is playing the game
-    currentNumberOfMoves = 0,   // Move counter, whenever a direction is successful.
+    currentNumberOfMoves = 0,   // Move counter, whenever a direction is successful
     directionalMovePerformed = true; // Used to determine when a command is a directional move. True by default but will change through lifetime.
 
     // Rooms whose names shouldn't change.
