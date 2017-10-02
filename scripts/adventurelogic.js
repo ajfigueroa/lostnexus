@@ -106,7 +106,7 @@ $(document).ready(function () {
         }
     };
 
-    // This function  loops through the object location array and returns the index of the object in the room
+    // This function loops through the object location array and returns the index of the object in the room
     function getObjectForRoom(currentRoom) {
         var objectInRoomIndex = -1;
         if (currentRoom === 0) {
